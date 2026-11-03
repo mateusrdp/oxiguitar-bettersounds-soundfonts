@@ -2,7 +2,7 @@
 # set|id|name|role|licence|credit|source|files|bytes|notice
 # archive|id|sha256|size|url   (sets that are one .tar.xz)
 # file|id|sha256|size|url (or archive:path in the archive)|path in the set's folder
-set|clean-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, clean)|https://github.com/freepats/electric-guitar-FSBS-clean|123|128068398|
+set|clean-guitar|FreePats|clean-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, clean)|https://github.com/freepats/electric-guitar-FSBS-clean|123|128068398|
 file|clean-guitar|d1c5f7bdb688a4968aa8861b21dec9115f2ce37a8399b414222c4a732df0557b|11012|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-clean/192cf0d9bf2c4ba6ead8e3524ba3f78818e4fe91/EGuitarFSBS-clean%20bridge%2020260807.sfz|Clean Guitar.sfz
 file|clean-guitar|a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499|7048|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-clean/192cf0d9bf2c4ba6ead8e3524ba3f78818e4fe91/LICENSE.txt|LICENSE.txt
 file|clean-guitar|9d0f723bf48f9e0aae245360aed45eb4328f3f881cd6f34afe4eeabf66f09e43|597|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-clean/192cf0d9bf2c4ba6ead8e3524ba3f78818e4fe91/README.txt|README.txt
@@ -126,7 +126,7 @@ file|clean-guitar|a907b48090b4223b64f539b8a82d27940130a632705c72b4a548845a09fff9
 file|clean-guitar|969856173cf37577693d3b0fe301bfabc097101ef84378de0b9544969a4cfa93|867440|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-clean/192cf0d9bf2c4ba6ead8e3524ba3f78818e4fe91/samples/bridge/G4_s6_02.flac|samples/bridge/G4_s6_02.flac
 file|clean-guitar|3a40757461292aa73183b65507a930f7d9643e97f12f718f5c5dc8dae73b31ef|735429|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-clean/192cf0d9bf2c4ba6ead8e3524ba3f78818e4fe91/samples/bridge/G4_s6_03.flac|samples/bridge/G4_s6_03.flac
 file|clean-guitar|5450bceeb66a70ca208f22bf3d84b1af48df932e269581492d3446a368a48ca0|852954|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-clean/192cf0d9bf2c4ba6ead8e3524ba3f78818e4fe91/samples/bridge/G4_s6_04.flac|samples/bridge/G4_s6_04.flac
-set|overdriven-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist2)|https://github.com/freepats/electric-guitar-FSBS-dist2|123|135799672|
+set|overdriven-guitar|FreePats|overdriven-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist2)|https://github.com/freepats/electric-guitar-FSBS-dist2|123|135799672|
 file|overdriven-guitar|a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499|7048|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist2/21261b8bcb02d1cbf52dc02f1b1636df52d4a947/LICENSE.txt|LICENSE.txt
 file|overdriven-guitar|746b36690f1d4a0e8d4dcc3ab8c7880998b313fa46d060e12671d208e639c754|11019|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist2/21261b8bcb02d1cbf52dc02f1b1636df52d4a947/EGuitarFSBS-dist2%20bridge%2020220911.sfz|Overdriven Guitar.sfz
 file|overdriven-guitar|89015bb865e54f65b80a90081995101d3d12d571401de886186b83c53d351e3a|627|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist2/21261b8bcb02d1cbf52dc02f1b1636df52d4a947/README.txt|README.txt
@@ -250,7 +250,7 @@ file|overdriven-guitar|2d7e282a1408944b8217dbdf9789e8f9578128fc34e74b86c8954d53e
 file|overdriven-guitar|362fb55856f5f1e6d32f084f262ce65a1b5677f8f079f9f63f46f4b3311b8019|651846|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist2/21261b8bcb02d1cbf52dc02f1b1636df52d4a947/samples/bridge/G4_s6_02.flac|samples/bridge/G4_s6_02.flac
 file|overdriven-guitar|7ebc8e46eb28d50054083eca2f790d480451395e840dd28c635364a760e0fceb|595015|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist2/21261b8bcb02d1cbf52dc02f1b1636df52d4a947/samples/bridge/G4_s6_03.flac|samples/bridge/G4_s6_03.flac
 file|overdriven-guitar|576c314fc1fd8780387a68e0ec0edb7341f25334174cbac1e910193081b4b246|671441|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist2/21261b8bcb02d1cbf52dc02f1b1636df52d4a947/samples/bridge/G4_s6_04.flac|samples/bridge/G4_s6_04.flac
-set|distorted-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist1)|https://github.com/freepats/electric-guitar-FSBS-dist1|123|312825903|
+set|distorted-guitar|FreePats|distorted-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist1)|https://github.com/freepats/electric-guitar-FSBS-dist1|123|312825903|
 file|distorted-guitar|a3b2c45b6d80c5add4e6a9cd1895056e8bdf6adb820e908b974444dc676ab305|11019|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist1/bbae17f0ad16f5edd7ec22178d181f3e3f6696fa/EGuitarFSBS-dist1%20bridge%2020220911.sfz|Distorted Guitar.sfz
 file|distorted-guitar|a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499|7048|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist1/bbae17f0ad16f5edd7ec22178d181f3e3f6696fa/LICENSE.txt|LICENSE.txt
 file|distorted-guitar|6000119d1a1d243167c0707c1c9bfb11e6f45d35a2bb76f0db0609f070be9bbf|657|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist1/bbae17f0ad16f5edd7ec22178d181f3e3f6696fa/README.txt|README.txt
