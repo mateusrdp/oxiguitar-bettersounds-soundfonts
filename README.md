@@ -69,9 +69,11 @@ licence, author and the hosts the files come from, and waits for a yes.
 it. `--dir DIR` (`-Dir DIR`) picks any other folder.
 
 Each set gets its own folder holding the instrument, its samples, its
-licence and an `oxiguitar-set.json` that tells OxiGuitar what it is. Open
-OxiGuitar's settings, choose the MIDI/SFZ player and pick the set for each
-kind of track; the installed sets are suggested for the tracks they fit.
+licence and an `oxiguitar-set.json` that tells OxiGuitar what it is (its
+name, licence and credit, and the row it is made for). Then pick each set
+in OxiGuitar: Tools, Plugins, MIDI (SoundFont, SFZ), Settings, one row per
+kind of track (Clean Guitar for Clean guitars, and so on). OxiGuitar
+doesn't pick them by itself.
 
 ### Update, remove
 
