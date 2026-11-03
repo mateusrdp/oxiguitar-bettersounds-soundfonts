@@ -13,6 +13,9 @@ trap 'rm -rf "$work"' EXIT
 fail() { echo "FAILED: $*" >&2; exit 1; }
 
 src="$work/src"; mkdir -p "$src/samples"
+# curl on Windows is a native program that needs C:/... in a file:// address.
+url_root="$src"
+if command -v cygpath >/dev/null 2>&1; then url_root="/$(cygpath -m "$src")"; fi
 printf 'sfz one' > "$src/one.sfz"
 printf 'sample a' > "$src/samples/a.flac"
 printf 'licence text' > "$src/LICENSE"
@@ -21,11 +24,11 @@ sum() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{pri
 size() { wc -c < "$1" | tr -d ' '; }
 {
     echo "set|first|FreePats|electric-guitars|CC0 1.0|Somebody \"Q\" (First)|https://example.org/first|3|0|"
-    echo "file|first|$(sum "$src/one.sfz")|$(size "$src/one.sfz")|file://$src/one.sfz|First Guitar.sfz"
-    echo "file|first|$(sum "$src/samples/a.flac")|$(size "$src/samples/a.flac")|file://$src/samples/a.flac|samples/a.flac"
-    echo "file|first|$(sum "$src/LICENSE")|$(size "$src/LICENSE")|file://$src/LICENSE|LICENSE"
+    echo "file|first|$(sum "$src/one.sfz")|$(size "$src/one.sfz")|file://$url_root/one.sfz|First Guitar.sfz"
+    echo "file|first|$(sum "$src/samples/a.flac")|$(size "$src/samples/a.flac")|file://$url_root/samples/a.flac|samples/a.flac"
+    echo "file|first|$(sum "$src/LICENSE")|$(size "$src/LICENSE")|file://$url_root/LICENSE|LICENSE"
     echo "set|second|FreePats|drums|CC BY 4.0|Somebody Else|https://example.org/second|1|7|Drums by Example.org"
-    echo "file|second|$(sum "$src/two.sfz")|$(size "$src/two.sfz")|file://$src/two.sfz|Second Kit.sfz"
+    echo "file|second|$(sum "$src/two.sfz")|$(size "$src/two.sfz")|file://$url_root/two.sfz|Second Kit.sfz"
 } > "$work/sets.txt"
 export OXIGUITAR_SETS_FILE="$work/sets.txt"
 out="$work/out"
