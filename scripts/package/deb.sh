@@ -114,13 +114,15 @@ db_stop || true
 exit 0
 POSTINST
 
+set_ids="$(awk -F'|' '$1 == "set" { print $2 }' "$repo/sets.txt" | tr '\n' ' ')"
 cat > "$tree/DEBIAN/postrm" <<POSTRM
 #!/bin/sh
 set -e
 if [ "\$1" = purge ]; then
     dir=/usr/share/oxiguitar/soundfonts
     # Only the folders the installer made (they hold oxiguitar-set.json).
-    for id in \$(awk -F'|' '\$1 == "set" { print \$2 }' $share/sets.txt 2>/dev/null); do
+    # The sets this version knows (sets.txt is already gone when purging).
+    for id in $set_ids; do
         if [ -f "\$dir/\$id/oxiguitar-set.json" ]; then rm -rf "\${dir:?}/\$id"; fi
     done
     rm -f "\$dir/CREDITS.txt"
