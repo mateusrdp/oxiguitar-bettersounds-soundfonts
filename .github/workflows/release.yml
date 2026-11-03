@@ -62,7 +62,7 @@ jobs:
       - name: Install the .deb, then purge it
         run: |
           sudo DEBIAN_FRONTEND=noninteractive dpkg -i dist/*.deb || { sudo apt-get install -f -y && sudo DEBIAN_FRONTEND=noninteractive dpkg -i dist/*.deb; }
-          oxiguitar-install-sounds --list | grep -q '^drums '
+          oxiguitar-install-sounds --list > list.txt; grep -q '^drums ' list.txt
           test ! -e /usr/share/oxiguitar/soundfonts/drums   # declined by default: nothing downloaded
           # A set made by hand is removed with the package; one that is not ours stays.
           sudo mkdir -p /usr/share/oxiguitar/soundfonts/drums /usr/share/oxiguitar/soundfonts/mine
@@ -76,7 +76,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends rpm
           rpm -qp --requires dist/*.rpm
           sudo rpm -i --nodeps --nosignature dist/*.rpm
-          oxiguitar-install-sounds --list | grep -q '^drums '
+          oxiguitar-install-sounds --list > list.txt; grep -q '^drums ' list.txt
       - uses: actions/upload-artifact@v7
         with:
           name: oxiguitar-bettersounds-soundfonts-${{ steps.version.outputs.version }}
