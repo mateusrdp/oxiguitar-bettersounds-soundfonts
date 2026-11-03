@@ -23,13 +23,13 @@ try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::S
 $setsFile = if ($env:OXIGUITAR_SETS_FILE) { $env:OXIGUITAR_SETS_FILE } else { Join-Path $PSScriptRoot "sets.txt" }
 if (-not (Test-Path -LiteralPath $setsFile)) { throw "cannot find $setsFile" }
 
-$sets = [ordered]@{}
+$catalog = [ordered]@{}
 $files = @{}
 foreach ($line in [IO.File]::ReadAllLines($setsFile, [Text.Encoding]::UTF8)) {
     if ($line.StartsWith("#") -or $line.Trim() -eq "") { continue }
     $f = $line.Split("|")
     if ($f[0] -eq "set") {
-        $sets[$f[1]] = [pscustomobject]@{ Id = $f[1]; Name = $f[2]; Role = $f[3]; Licence = $f[4]; Credit = $f[5]
+        $catalog[$f[1]] = [pscustomobject]@{ Id = $f[1]; Name = $f[2]; Role = $f[3]; Licence = $f[4]; Credit = $f[5]
             Source = $f[6]; Count = [int]$f[7]; Bytes = [int64]$f[8]; Notice = $f[9] }
         $files[$f[1]] = New-Object System.Collections.ArrayList
     } elseif ($f[0] -eq "file") {
@@ -40,7 +40,7 @@ function Mb($b) { "{0:N1} MB" -f ($b / 1e6) }
 
 if ($List) {
     "{0,-18} {1,-10} {2,-12} {3}" -f "SET", "SIZE", "LICENCE", "CREDIT"
-    foreach ($s in $sets.Values) { "{0,-18} {1,-10} {2,-12} {3}" -f $s.Id, (Mb $s.Bytes), $s.Licence, $s.Credit }
+    foreach ($s in $catalog.Values) { "{0,-18} {1,-10} {2,-12} {3}" -f $s.Id, (Mb $s.Bytes), $s.Licence, $s.Credit }
     return
 }
 
@@ -54,15 +54,15 @@ if (-not $Sets) {
     elseif ($Uninstall) { throw "say which sets to remove with -Sets (see -List)" }
     else {
         "OxiGuitar sound sets:`n"
-        foreach ($s in $sets.Values) { "  {0,-18} {1,-10} {2}" -f $s.Id, (Mb $s.Bytes), $s.Licence }
+        foreach ($s in $catalog.Values) { "  {0,-18} {1,-10} {2}" -f $s.Id, (Mb $s.Bytes), $s.Licence }
         $Sets = Read-Host "`nWhich sets? Names separated by commas, or `"all`" [all]"
         if (-not $Sets) { $Sets = "all" }
     }
 }
-if ($Sets -eq "all") { $chosen = @($sets.Keys) }
+if ($Sets -eq "all") { $chosen = @($catalog.Keys) }
 else {
     $chosen = @($Sets.Split(",") | ForEach-Object { $_.Trim() } | Where-Object { $_ })
-    foreach ($id in $chosen) { if (-not $sets.Contains($id)) { throw "no such set: $id (see -List)" } }
+    foreach ($id in $chosen) { if (-not $catalog.Contains($id)) { throw "no such set: $id (see -List)" } }
 }
 
 function Confirm-Yes($question) {
@@ -88,7 +88,7 @@ if ($Uninstall) {
 "These sets will be installed into:`n  $Dir`n"
 $total = 0
 foreach ($id in $chosen) {
-    $s = $sets[$id]
+    $s = $catalog[$id]
     $total += $s.Bytes
     $hosts = ($files[$id] | ForEach-Object { ([uri]$_.Url).Host } | Sort-Object -Unique) -join " "
     "  ${id}: $(Mb $s.Bytes), $($s.Licence), $($s.Credit)"
@@ -106,7 +106,7 @@ New-Item -ItemType Directory -Force -Path $Dir | Out-Null
 $wc = New-Object Net.WebClient
 try {
     foreach ($id in $chosen) {
-        $s = $sets[$id]
+        $s = $catalog[$id]
         $setDir = Join-Path $Dir $id
         "== $id"
         $n = 0
@@ -134,7 +134,7 @@ try {
 $credits = New-Object Text.StringBuilder
 [void]$credits.AppendLine("OxiGuitar sound sets installed here")
 [void]$credits.AppendLine("")
-foreach ($s in $sets.Values) {
+foreach ($s in $catalog.Values) {
     if (-not (Test-Path -LiteralPath (Join-Path (Join-Path $Dir $s.Id) "oxiguitar-set.json"))) { continue }
     [void]$credits.AppendLine($s.Id)
     [void]$credits.AppendLine("  by:      $($s.Credit)")
