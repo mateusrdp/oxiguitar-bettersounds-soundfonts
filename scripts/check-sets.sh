@@ -15,7 +15,7 @@ import pathlib, re, sys
 errors = []
 want = [l.split("|")[0] for l in pathlib.Path("sets.in").read_text(encoding="utf-8").splitlines()
         if l.strip() and not l.startswith("#")]
-sets, files = {}, {}
+sets, files, archives = {}, {}, {}
 for l in pathlib.Path("sets.txt").read_text(encoding="utf-8").splitlines():
     if not l or l.startswith("#"):
         continue
@@ -23,6 +23,8 @@ for l in pathlib.Path("sets.txt").read_text(encoding="utf-8").splitlines():
     if f[0] == "set" and len(f) == 10:
         sets[f[1]] = f
         files[f[1]] = []
+    elif f[0] == "archive" and len(f) == 5:
+        archives[f[1]] = f
     elif f[0] == "file" and len(f) == 6:
         files.setdefault(f[1], []).append(f)
     else:
@@ -31,8 +33,12 @@ if want != list(sets):
     errors.append(f"sets.in has {want}, sets.txt has {list(sets)}; run scripts/pin.sh")
 for sid, s in sets.items():
     fs = files[sid]
-    if int(s[7]) != len(fs) or int(s[8]) != sum(int(f[3]) for f in fs):
+    arc = archives.get(sid)
+    # The download is the archive, for a set that is one; else the files.
+    if int(s[7]) != len(fs) or int(s[8]) != (int(arc[3]) if arc else sum(int(f[3]) for f in fs)):
         errors.append(f"{sid}: the totals do not match the files")
+    if arc and (not re.fullmatch(r"[0-9a-f]{64}", arc[2]) or not arc[4].startswith("https://")):
+        errors.append(f"{sid}: bad archive line")
     # One instrument: exactly one .sfz in the shallowest folder that has any
     # (the files it #includes live in folders below it).
     sfz = [f[5] for f in fs if f[5].lower().endswith(".sfz")]
@@ -40,14 +46,15 @@ for sid, s in sets.items():
     top = [s for s in sfz if s.count("/") == depth]
     if len(top) != 1:
         errors.append(f"{sid}: expected one instrument .sfz, found {len(top)}")
-    if not any(re.match(r"(LICENSE|LICENCE|COPYING)", f[5], re.I) for f in fs):
+    # An archive may carry its licence in its readme.
+    if not any(re.match(r"(LICENSE|LICENCE|COPYING)" + ("|README|readme" if arc else ""), f[5], re.I) for f in fs):
         errors.append(f"{sid}: no licence file")
     if len({f[5] for f in fs}) != len(fs):
         errors.append(f"{sid}: a path is listed twice")
     for f in fs:
         if not re.fullmatch(r"[0-9a-f]{64}", f[2]):
             errors.append(f"{sid}: bad checksum for {f[5]}")
-        if not re.match(r"https://raw\.githubusercontent\.com/[^/]+/[^/]+/[0-9a-f]{40}/", f[4]):
+        if not (f[4].startswith("archive:") if arc else re.match(r"https://raw\.githubusercontent\.com/[^/]+/[^/]+/[0-9a-f]{40}/", f[4])):
             errors.append(f"{sid}: {f[5]} is not pinned to a commit")
         if f[5].startswith(("/", "..")) or "/../" in f[5] or "\\" in f[5]:
             errors.append(f"{sid}: {f[5]} leaves the set's folder")

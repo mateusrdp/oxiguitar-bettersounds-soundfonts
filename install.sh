@@ -170,6 +170,8 @@ for id in $chosen; do
     # The file lines of this set, read from a copy so the loop can fetch.
     list_file="$dir/.oxiguitar-files.$$"
     awk -F'|' -v id="$id" '$1 == "file" && $2 == id' "$sets_file" > "$list_file"
+    pending="$dir/.oxiguitar-pending.$$"
+    : > "$pending"
     # shellcheck disable=SC2094,SC2034
     while IFS='|' read -r _ _ sum size url rel; do
         n=$((n + 1))
@@ -178,6 +180,9 @@ for id in $chosen; do
         if [ -f "$target" ] && [ "$(sha256 "$target")" = "$sum" ]; then
             continue
         fi
+        case "$url" in
+            archive:*) printf '%s|%s|%s\n' "${url#archive:}" "$sum" "$rel" >> "$pending"; continue ;;
+        esac
         part="$target.part"
         printf '\r  %d/%d' "$n" "$count"
         fetch "$url" "$part" || { rm -f "$part" "$list_file"; die "could not download $url"; }
@@ -188,6 +193,34 @@ for id in $chosen; do
         mv "$part" "$target"
     done < "$list_file"
     rm -f "$list_file"
+    # A set that is one archive: fetched once, and only the files listed for
+    # it are taken out of it, each checked on its own.
+    if [ -s "$pending" ]; then
+        read -r _ _ asum _ aurl < <(awk -F'|' -v id="$id" '$1 == "archive" && $2 == id' "$sets_file" | tr '|' ' ') || true
+        [ -n "${aurl:-}" ] || { rm -f "$pending"; die "$id: sets.txt has no archive for it"; }
+        arc="$dir/.oxiguitar-archive.$$"
+        unpack="$dir/.oxiguitar-unpack.$$"
+        printf '\r  downloading the archive'
+        fetch "$aurl" "$arc" || { rm -rf "$arc" "$pending"; die "could not download $aurl"; }
+        if [ "$(sha256 "$arc")" != "$asum" ]; then
+            rm -rf "$arc" "$pending"
+            die "the archive for $id does not match the checksum in sets.txt; it was thrown away."
+        fi
+        rm -rf "$unpack"; mkdir -p "$unpack"
+        tar -xf "$arc" -C "$unpack" || { rm -rf "$arc" "$unpack" "$pending"; die "could not unpack the archive for $id (tar needs xz support)"; }
+        # shellcheck disable=SC2094
+        while IFS='|' read -r inner sum rel; do
+            [ -f "$unpack/$inner" ] || { rm -rf "$arc" "$unpack" "$pending"; die "$inner is missing from the archive"; }
+            if [ "$(sha256 "$unpack/$inner")" != "$sum" ]; then
+                rm -rf "$arc" "$unpack" "$pending"
+                die "$rel does not match the checksum in sets.txt; it was thrown away."
+            fi
+            mkdir -p "$(dirname "$set_dir/$rel")"
+            mv "$unpack/$inner" "$set_dir/$rel"
+        done < "$pending"
+        rm -rf "$arc" "$unpack"
+    fi
+    rm -f "$pending"
     echo
     role="$(field "$id" 4)"
     {
