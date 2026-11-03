@@ -20,6 +20,8 @@ jobs:
       - uses: actions/checkout@v7
       - name: Pin
         run: scripts/pin.sh
+      - name: Show what changed
+        run: git diff sets.txt || true
       - uses: actions/upload-artifact@v7
         with:
           name: sets.txt
