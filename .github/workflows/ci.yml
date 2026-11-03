@@ -143,6 +143,36 @@ jobs:
           command: check
           arguments: --all-features
 
+  installers:
+    name: Installers (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Linux, os: ubuntu-24.04 }
+          - { name: macOS, os: macos-15 }
+          - { name: Windows, os: windows-2025 }
+    steps:
+      - uses: actions/checkout@v7
+      - name: sets.txt is consistent with sets.in
+        if: runner.os == 'Linux'
+        run: scripts/check-sets.sh
+      - name: Shell lint
+        if: runner.os == 'Linux'
+        run: shellcheck install.sh scripts/*.sh tests/*.sh
+      - name: install.sh
+        shell: bash
+        run: tests/test-install.sh
+      - name: install.ps1 (Windows PowerShell 5.1)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: ./tests/test-install.ps1
+      - name: install.ps1 (PowerShell 7)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tests/test-install.ps1
+
   dco:
     name: Sign-off (DCO)
     if: github.event_name == 'pull_request'
@@ -159,7 +189,7 @@ jobs:
   ci-success:
     name: ci-success
     if: always()
-    needs: [rust, fmt, lint, test, deny, dco]
+    needs: [rust, fmt, lint, test, deny, installers, dco]
     runs-on: ubuntu-24.04
     steps:
       - name: Every job passed
