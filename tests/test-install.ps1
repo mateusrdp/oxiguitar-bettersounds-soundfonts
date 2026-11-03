@@ -27,7 +27,7 @@ function AUrl($p) { ([uri]$p).AbsoluteUri }
 function ASum($p) { (Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant() }
 function ALen($p) { (Get-Item -LiteralPath $p).Length }
 $lines = @(
-    "set|first|FreePats|electric-guitars|CC0 1.0|Somebody `"Q`" (First)|https://example.org/first|3|0|",
+    "set|first|FreePats|clean-guitars|CC0 1.0|Somebody `"Q`" (First)|https://example.org/first|3|0|",
     "file|first|$(Sum 'one.sfz')|$(Len 'one.sfz')|$(Url 'one.sfz')|First Guitar.sfz",
     "file|first|$(Sum 'samples/a.flac')|$(Len 'samples/a.flac')|$(Url 'samples/a.flac')|samples/a.flac",
     "file|first|$(Sum 'LICENSE')|$(Len 'LICENSE')|$(Url 'LICENSE')|LICENSE",
@@ -48,7 +48,7 @@ try {
     if ([IO.File]::ReadAllText((Join-Path $out "first/First Guitar.sfz")) -ne "sfz one") { Fail "entry missing" }
     if ([IO.File]::ReadAllText((Join-Path $out "first/samples/a.flac")) -ne "sample a") { Fail "sample missing" }
     $json = [IO.File]::ReadAllText((Join-Path $out "first/oxiguitar-set.json"))
-    if ($json -notmatch '"role": "electric-guitars"') { Fail "role missing" }
+    if ($json -notmatch '"role": "clean-guitars"') { Fail "role missing" }
     if (-not $json.Contains('Somebody \"Q\" (First)')) { Fail "credit not escaped" }
     $credits = [IO.File]::ReadAllText((Join-Path $out "CREDITS.txt"))
     if (-not $credits.Contains("Drums by Example.org")) { Fail "notice missing from CREDITS.txt" }

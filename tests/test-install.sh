@@ -27,7 +27,7 @@ printf 'sfz three' > "$arc/Three.sfz"; printf 'sample b' > "$arc/samples/b.wav";
 printf 'not wanted' > "$arc/Other.sfz"
 tar -C "$work/arc" -cJf "$work/third.tar.xz" third-1.0
 {
-    echo "set|first|FreePats|electric-guitars|CC0 1.0|Somebody \"Q\" (First)|https://example.org/first|3|0|"
+    echo "set|first|FreePats|clean-guitars|CC0 1.0|Somebody \"Q\" (First)|https://example.org/first|3|0|"
     echo "file|first|$(sum "$src/one.sfz")|$(size "$src/one.sfz")|file://$url_root/one.sfz|First Guitar.sfz"
     echo "file|first|$(sum "$src/samples/a.flac")|$(size "$src/samples/a.flac")|file://$url_root/samples/a.flac|samples/a.flac"
     echo "file|first|$(sum "$src/LICENSE")|$(size "$src/LICENSE")|file://$url_root/LICENSE|LICENSE"
@@ -51,7 +51,7 @@ echo n | "$root/install.sh" --sets first --dir "$out" > "$work/log" || fail "dec
 "$root/install.sh" --yes --dir "$out" > "$work/log" || fail "install failed"
 [ "$(cat "$out/first/First Guitar.sfz")" = "sfz one" ] || fail "entry missing"
 [ "$(cat "$out/first/samples/a.flac")" = "sample a" ] || fail "sample missing"
-grep -q '"role": "electric-guitars"' "$out/first/oxiguitar-set.json" || fail "role missing"
+grep -q '"role": "clean-guitars"' "$out/first/oxiguitar-set.json" || fail "role missing"
 grep -q 'Somebody \\"Q\\" (First)' "$out/first/oxiguitar-set.json" || fail "credit not escaped"
 grep -q 'Drums by Example.org' "$out/CREDITS.txt" || fail "notice missing from CREDITS.txt"
 grep -q 'first' "$out/CREDITS.txt" || fail "set missing from CREDITS.txt"
