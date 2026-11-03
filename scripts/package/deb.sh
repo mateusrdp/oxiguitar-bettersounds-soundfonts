@@ -35,7 +35,13 @@ License: GPL-3+
  sets are not part of this package; each keeps its own licence, listed in
  ${share}/sets.txt and in CREDITS.txt next to the sets once downloaded.
 COPYRIGHT
-gzip -9n -c "$repo/CHANGELOG.md" > "$tree/usr/share/doc/$package/CHANGELOG.md.gz"
+{
+    echo "$package ($version) unstable; urgency=medium"
+    echo
+    echo "  * See CHANGELOG.md in the source repository for what changed."
+    echo
+    echo " -- Mateus Rocha de Paula <mateusrdp@users.noreply.github.com>  $(date -R)"
+} | gzip -9n -c > "$tree/usr/share/doc/$package/changelog.gz"
 chmod 644 "$tree/usr/share/doc/$package/"*
 
 install -d -m755 "$tree/usr/share/man/man1"
