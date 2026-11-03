@@ -33,9 +33,13 @@ for sid, s in sets.items():
     fs = files[sid]
     if int(s[7]) != len(fs) or int(s[8]) != sum(int(f[3]) for f in fs):
         errors.append(f"{sid}: the totals do not match the files")
+    # One instrument: exactly one .sfz in the shallowest folder that has any
+    # (the files it #includes live in folders below it).
     sfz = [f[5] for f in fs if f[5].lower().endswith(".sfz")]
-    if len(sfz) != 1:
-        errors.append(f"{sid}: expected one .sfz, found {len(sfz)}")
+    depth = min((s.count("/") for s in sfz), default=None)
+    top = [s for s in sfz if s.count("/") == depth]
+    if len(top) != 1:
+        errors.append(f"{sid}: expected one instrument .sfz, found {len(top)}")
     if not any(re.match(r"(LICENSE|LICENCE|COPYING)", f[5], re.I) for f in fs):
         errors.append(f"{sid}: no licence file")
     if len({f[5] for f in fs}) != len(fs):

@@ -1,0 +1,32 @@
+# Runs scripts/pin.sh when the sets change, on a GitHub runner (which can
+# reach every host the sets come from), and fails if sets.txt is not what it
+# produces. The result is kept as an artifact, so a changed sets.txt can be
+# taken from there. SPDX-License-Identifier: GPL-3.0-or-later
+name: Pins
+
+on:
+  pull_request:
+    paths: [sets.in, sets.txt, scripts/pin.sh]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pin:
+    name: sets.txt matches sets.in
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Pin
+        run: scripts/pin.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: sets.txt
+          path: sets.txt
+      - name: Is sets.txt what was committed
+        run: |
+          git diff --stat --exit-code sets.txt || {
+            echo "::error::sets.txt is not what scripts/pin.sh makes; take it from this run's artifact"
+            exit 1
+          }

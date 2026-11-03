@@ -4,16 +4,18 @@
 #   id | name | role | licence | credit | GitHub repository | ref | the
 #   instrument's .sfz in it | what to call it once installed | notice
 #
+# ref is a commit (the sets stay as they were pinned until it is changed).
 # One instrument per set, no variations: only the one .sfz named here is
 # kept (renamed, nothing inside it is changed), with the files it plays and
 # the licence and readme. Every set is credited, whatever its licence. The
 # notice is text a licence asks to be shown (empty when none).
 #
 # role is one of electric-guitars, acoustic-guitars, basses, drums.
-clean-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, clean)|freepats/electric-guitar-FSBS-clean|HEAD|EGuitarFSBS-clean bridge 20260807.sfz|Clean Guitar|
-overdriven-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist2)|freepats/electric-guitar-FSBS-dist2|HEAD|EGuitarFSBS-dist2 bridge 20220911.sfz|Overdriven Guitar|
-distorted-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist1)|freepats/electric-guitar-FSBS-dist1|HEAD|EGuitarFSBS-dist1 bridge 20220911.sfz|Distorted Guitar|
-nylon-guitar|FreePats|acoustic-guitars|CC0 1.0|FreePats project (Spanish classical guitar)|freepats/spanish-classical-guitar|HEAD|SpanishClassicalGuitar-20190618.sfz|Nylon Guitar|
-ukulele|FreePats|acoustic-guitars|CC0 1.0|Mateusz Dąbrowski, for FreePats (Ukulele)|freepats/ukulele1|HEAD|Ukulele 20260811.sfz|Ukulele|
-bass|FreePats|basses|CC0 1.0|Andrea Biasior, for FreePats (Finger Bass YR)|freepats/electric-bass-YR|HEAD|FingerBassYR 20190930.sfz|Finger Bass|
-drums|FreePats|drums|CC BY 4.0|Lars Muldjord (MuldjordKit, DrumGizmo), FreePats version|freepats/muldjordkit|HEAD|MuldjordKit 20201018.sfz|Drum Kit|Drum samples provided by DrumGizmo.org
+clean-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, clean)|freepats/electric-guitar-FSBS-clean|192cf0d9bf2c4ba6ead8e3524ba3f78818e4fe91|EGuitarFSBS-clean bridge 20260807.sfz|Clean Guitar|
+overdriven-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist2)|freepats/electric-guitar-FSBS-dist2|21261b8bcb02d1cbf52dc02f1b1636df52d4a947|EGuitarFSBS-dist2 bridge 20220911.sfz|Overdriven Guitar|
+distorted-guitar|FreePats|electric-guitars|CC0 1.0|FreePats (Electric Guitar FSBS, dist1)|freepats/electric-guitar-FSBS-dist1|bbae17f0ad16f5edd7ec22178d181f3e3f6696fa|EGuitarFSBS-dist1 bridge 20220911.sfz|Distorted Guitar|
+nylon-guitar|FreePats|acoustic-guitars|CC0 1.0|FreePats project (Spanish classical guitar)|freepats/spanish-classical-guitar|6f4eb1b092acc88f5448cea1a0001bd07b971af8|SpanishClassicalGuitar-20190618.sfz|Nylon Guitar|
+ukulele|FreePats|acoustic-guitars|CC0 1.0|Mateusz Dąbrowski, for FreePats (Ukulele)|freepats/ukulele1|86d345f6f7b79a106ace98eca0da19b087786dba|Ukulele 20260811.sfz|Ukulele|
+bass|Karoryfer|basses|CC0 1.0|Karoryfer Samples (Black and Blue Basses, plucked)|sfzinstruments/karoryfer.black-and-blue-basses|6e7d674cdb41be7a54dbccb15472401ad01099b9|Programs/05-darkblack_pluck.sfz|Bass|
+drums|FreePats|drums|CC BY 4.0|Lars Muldjord (MuldjordKit, DrumGizmo), FreePats version|freepats/muldjordkit|719fe72bc6693b94f1229674e202881145ab44ed|MuldjordKit 20201018.sfz|Drum Kit|Drum samples provided by DrumGizmo.org
+steel-guitar|FreePats|acoustic-guitars|GPL-3.0-or-later with exception|FreePats (FSS Steel String Guitar)|https://freepats.zenvoid.org/Guitar/FSS-SteelStringGuitar/FSS-SteelStringGuitar-SFZ-20200521.tar.xz|HEAD|FSS-SteelStringGuitar.sfz|Steel String Guitar|
