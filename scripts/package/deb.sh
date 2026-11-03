@@ -35,8 +35,12 @@ License: GPL-3+
  sets are not part of this package; each keeps its own licence, listed in
  ${share}/sets.txt and in CREDITS.txt next to the sets once downloaded.
 COPYRIGHT
-gzip -9n -c "$repo/CHANGELOG.md" > "$tree/usr/share/doc/$package/changelog.gz"
+gzip -9n -c "$repo/CHANGELOG.md" > "$tree/usr/share/doc/$package/CHANGELOG.md.gz"
 chmod 644 "$tree/usr/share/doc/$package/"*
+
+install -d -m755 "$tree/usr/share/man/man1"
+gzip -9n -c "$repo/scripts/package/oxiguitar-install-sounds.1" > "$tree/usr/share/man/man1/oxiguitar-install-sounds.1.gz"
+chmod 644 "$tree/usr/share/man/man1/oxiguitar-install-sounds.1.gz"
 
 cat > "$tree/DEBIAN/control" <<CONTROL
 Package: $package
@@ -47,10 +51,10 @@ Architecture: all
 Installed-Size: $(($(du -sk "$tree/usr" | cut -f1)))
 Maintainer: Mateus Rocha de Paula <mateusrdp@users.noreply.github.com>
 Homepage: https://github.com/mateusrdp/oxiguitar-bettersounds-soundfonts
-Depends: bash, curl | wget, tar, xz-utils, debconf | debconf-2.0
+Depends: curl | wget, xz-utils, debconf | debconf-2.0
 Recommends: oxiguitar-midi
 Description: $summary
- $description
+$(printf '%s\n' "$description" | fold -s -w 78 | sed -e 's/ *$//' -e 's/^/ /')
 CONTROL
 
 cat > "$tree/DEBIAN/templates" <<'TEMPLATES'
@@ -66,8 +70,8 @@ Description: Download OxiGuitar's recommended sound sets now?
 Template: oxiguitar-bettersounds-soundfonts/sets
 Type: string
 Default: all
-Description: Which sound sets?
- Names separated by commas, or "all". Run "oxiguitar-install-sounds --list"
+Description: Sound sets to download (names separated by commas, or "all"):
+ Run "oxiguitar-install-sounds --list"
  for the names, sizes and licences.
 TEMPLATES
 
