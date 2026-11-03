@@ -1,0 +1,106 @@
+# Test builds and releases. Builds the .deb and .rpm (the same file for every
+# architecture: they are a script and a list), a zip, install.sh, install.ps1,
+# sets.txt and SHA256SUMS, and tests the packages by installing them.
+#
+# - On a pull request, and on a push to develop or main: nothing is
+#   released. The files stay under the run for 14 days, with a ~dev version;
+#   those are the test builds.
+# - On a pushed v* tag (only the maintainer makes them; v plus the version
+#   in VERSION): a DRAFT release holding all of it. Publishing the draft
+#   starts publish.yml.
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Release
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build and test the packages
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: version
+        run: |
+          v="$(tr -d '[:space:]' < VERSION)"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            [[ "${GITHUB_REF#refs/tags/v}" == "$v" ]] || { echo "::error::The tag $GITHUB_REF does not match VERSION ($v)"; exit 1; }
+          else
+            v="$v~dev${{ github.run_number }}"
+          fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+      - name: Build
+        run: |
+          v='${{ steps.version.outputs.version }}'
+          mkdir -p dist
+          scripts/package/deb.sh "$v" dist
+          scripts/package/rpm.sh "$v" dist
+          cp install.sh install.ps1 sets.txt dist/
+          d="oxiguitar-bettersounds-soundfonts-$v"
+          mkdir -p "zip/$d"
+          cp install.sh install.ps1 sets.txt README.md LICENSE CHANGELOG.md "zip/$d/"
+          (cd zip && zip -qr "../dist/$d.zip" "$d")
+          (cd dist && sha256sum -- * > SHA256SUMS)
+          ls -l dist
+      - name: Lint the .deb
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends lintian
+          lintian --fail-on error --tag-display-limit 0 dist/*.deb
+      - name: Install the .deb, then purge it
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive dpkg -i dist/*.deb || { sudo apt-get install -f -y && sudo DEBIAN_FRONTEND=noninteractive dpkg -i dist/*.deb; }
+          oxiguitar-install-sounds --list | grep -q '^drums '
+          test ! -e /usr/share/oxiguitar/soundfonts/drums   # declined by default: nothing downloaded
+          # A set made by hand is removed with the package; one that is not ours stays.
+          sudo mkdir -p /usr/share/oxiguitar/soundfonts/drums /usr/share/oxiguitar/soundfonts/mine
+          echo '{}' | sudo tee /usr/share/oxiguitar/soundfonts/drums/oxiguitar-set.json >/dev/null
+          sudo dpkg --purge oxiguitar-bettersounds-soundfonts
+          test ! -e /usr/share/oxiguitar/soundfonts/drums
+          test -d /usr/share/oxiguitar/soundfonts/mine
+          test ! -e /usr/share/oxiguitar-bettersounds
+      - name: Install the .rpm
+        run: |
+          sudo apt-get install -y --no-install-recommends rpm
+          rpm -qp --requires dist/*.rpm
+          sudo rpm -i --nodeps --nosignature dist/*.rpm
+          oxiguitar-install-sounds --list | grep -q '^drums '
+      - uses: actions/upload-artifact@v7
+        with:
+          name: oxiguitar-bettersounds-soundfonts-${{ steps.version.outputs.version }}
+          path: dist/*
+          retention-days: 14
+
+  draft:
+    name: Draft release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        with:
+          name: oxiguitar-bettersounds-soundfonts-${{ needs.build.outputs.version }}
+          path: dist
+      - name: Create the draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v='${{ needs.build.outputs.version }}'
+          awk -v v="$v" '$0 ~ "^## \\[" v "\\]" { on=1; next } /^## \[/ { on=0 } on' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "See CHANGELOG.md." > notes.md
+          gh release create "$GITHUB_REF_NAME" --draft --title "OxiGuitar sound sets $v" --notes-file notes.md dist/*
