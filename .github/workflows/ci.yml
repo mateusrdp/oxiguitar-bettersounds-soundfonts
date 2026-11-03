@@ -160,7 +160,16 @@ jobs:
         run: scripts/check-sets.sh
       - name: Shell lint
         if: runner.os == 'Linux'
-        run: shellcheck install.sh scripts/*.sh tests/*.sh
+        run: shellcheck -x install.sh scripts/*.sh scripts/*/*.sh tests/*.sh
+      - name: The release script
+        if: runner.os == 'Linux'
+        run: |
+          cp -r . "$RUNNER_TEMP/r" && cd "$RUNNER_TEMP/r"
+          printf '\n- A made-up change.\n' >> CHANGELOG.md
+          scripts/release/bump.sh 9.9.9 2030-01-01
+          test "$(cat VERSION)" = 9.9.9
+          grep -q '^## \[9.9.9\] - 2030-01-01' CHANGELOG.md
+          if scripts/release/bump.sh 9.9.9 2>/dev/null; then echo 'a version that is not higher was accepted'; exit 1; fi
       - name: install.sh
         shell: bash
         run: tests/test-install.sh
