@@ -16,18 +16,15 @@ choose between: pick the set for a track and it sounds right.
 | `overdriven-guitar` | Overdriven electric guitar | 136 MB | CC0 1.0 | FreePats (Electric Guitar FSBS, dist2) |
 | `distorted-guitar` | Distorted electric guitar | 313 MB | CC0 1.0 | FreePats (Electric Guitar FSBS, dist1) |
 | `nylon-guitar` | Nylon-string (classical) guitar | 5 MB | CC0 1.0 | FreePats project (Spanish classical guitar) |
+| `steel-guitar` | Steel-string acoustic guitar | 13 MB | GPL-3.0-or-later with exception | FreePats (FSS Steel String Guitar) |
 | `ukulele` | Ukulele | 3 MB | CC0 1.0 | Mateusz Dąbrowski, for FreePats (Ukulele) |
-| `bass` | Electric bass (fingered) | 3 MB | CC0 1.0 | Andrea Biasior, for FreePats (Finger Bass YR) |
+| `bass` | Electric bass (plucked) | 471 MB | CC0 1.0 | Karoryfer Samples (Black and Blue Basses, plucked) |
 | `drums` | Drum kit | 139 MB | CC BY 4.0 | Lars Muldjord (MuldjordKit, DrumGizmo), FreePats version |
 
 Every set is credited, whatever its licence (see [Credits](#credits)). The
 sets come from [FreePats](https://freepats.zenvoid.org/), a project of
-freely licensed sound banks; their files are fetched from the repositories
-linked in `sets.txt`.
-
-There is no steel-string acoustic guitar yet: the best free one is only
-published on the FreePats website, and adding it needs a download that this
-repository can pin from a GitHub runner (planned).
+freely licensed sound banks, and the bass from Karoryfer Samples; their files
+are fetched from the places listed in `sets.txt`.
 
 ## Install
 
@@ -90,6 +87,9 @@ bass`). Only folders the installer made are removed.
   addresses are pinned to a commit of the source repository, so they do not
   change under you. A file that does not match its checksum is thrown away
   and the install stops.
+- The steel-string guitar is published only as one archive on the FreePats
+  site, so that set downloads the archive once, checks it, and takes only the
+  listed files out of it.
 - The instrument file is renamed (to `Clean Guitar.sfz`, say) so it reads
   well in OxiGuitar; nothing inside any file is edited.
 

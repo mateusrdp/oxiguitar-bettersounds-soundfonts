@@ -25,6 +25,7 @@ if (-not (Test-Path -LiteralPath $setsFile)) { throw "cannot find $setsFile" }
 
 $catalog = [ordered]@{}
 $files = @{}
+$archives = @{}
 foreach ($line in [IO.File]::ReadAllLines($setsFile, [Text.Encoding]::UTF8)) {
     if ($line.StartsWith("#") -or $line.Trim() -eq "") { continue }
     $f = $line.Split("|")
@@ -32,6 +33,8 @@ foreach ($line in [IO.File]::ReadAllLines($setsFile, [Text.Encoding]::UTF8)) {
         $catalog[$f[1]] = [pscustomobject]@{ Id = $f[1]; Name = $f[2]; Role = $f[3]; Licence = $f[4]; Credit = $f[5]
             Source = $f[6]; Count = [int]$f[7]; Bytes = [int64]$f[8]; Notice = $f[9] }
         $files[$f[1]] = New-Object System.Collections.ArrayList
+    } elseif ($f[0] -eq "archive") {
+        $archives[$f[1]] = [pscustomobject]@{ Sum = $f[2]; Url = $f[4] }
     } elseif ($f[0] -eq "file") {
         [void]$files[$f[1]].Add([pscustomobject]@{ Sum = $f[2]; Size = [int64]$f[3]; Url = $f[4]; Path = $f[5] })
     }
@@ -110,11 +113,13 @@ try {
         $setDir = Join-Path $Dir $id
         "== $id"
         $n = 0
+        $pending = New-Object System.Collections.ArrayList
         foreach ($f in $files[$id]) {
             $n++
             $target = Join-Path $setDir ($f.Path -replace "/", [IO.Path]::DirectorySeparatorChar)
             New-Item -ItemType Directory -Force -Path (Split-Path $target) | Out-Null
             if ((Test-Path -LiteralPath $target) -and (Sha256 $target) -eq $f.Sum) { continue }
+            if ($f.Url.StartsWith("archive:")) { [void]$pending.Add([pscustomobject]@{ Inner = $f.Url.Substring(8); Sum = $f.Sum; Target = $target; Path = $f.Path }); continue }
             Write-Host -NoNewline ("`r  {0}/{1}" -f $n, $s.Count)
             $part = "$target.part"
             $wc.DownloadFile($f.Url, $part)
@@ -123,6 +128,32 @@ try {
                 throw "$($f.Path) does not match the checksum in sets.txt; it was thrown away. Nothing from it is installed."
             }
             Move-Item -LiteralPath $part -Destination $target -Force
+        }
+        # A set that is one archive: fetched once, and only the files listed for
+        # it are taken out of it, each checked on its own.
+        if ($pending.Count -gt 0) {
+            $a = $archives[$id]
+            if (-not $a) { throw "${id}: sets.txt has no archive for it" }
+            $arc = Join-Path $Dir ".oxiguitar-archive"
+            $unpack = Join-Path $Dir ".oxiguitar-unpack"
+            try {
+                Write-Host -NoNewline "`r  downloading the archive"
+                $wc.DownloadFile($a.Url, $arc)
+                if ((Sha256 $arc) -ne $a.Sum) { throw "the archive for $id does not match the checksum in sets.txt; it was thrown away." }
+                if (Test-Path -LiteralPath $unpack) { Remove-Item -LiteralPath $unpack -Recurse -Force }
+                New-Item -ItemType Directory -Force -Path $unpack | Out-Null
+                & tar -xf $arc -C $unpack
+                if ($LASTEXITCODE -ne 0) { throw "could not unpack the archive for $id (tar needs xz support)" }
+                foreach ($p in $pending) {
+                    $src = Join-Path $unpack ($p.Inner -replace "/", [IO.Path]::DirectorySeparatorChar)
+                    if (-not (Test-Path -LiteralPath $src)) { throw "$($p.Inner) is missing from the archive" }
+                    if ((Sha256 $src) -ne $p.Sum) { throw "$($p.Path) does not match the checksum in sets.txt; it was thrown away." }
+                    Move-Item -LiteralPath $src -Destination $p.Target -Force
+                }
+            } finally {
+                Remove-Item -LiteralPath $arc -Force -ErrorAction SilentlyContinue
+                Remove-Item -LiteralPath $unpack -Recurse -Force -ErrorAction SilentlyContinue
+            }
         }
         ""
         $json = "{`n  `"name`": `"$(Json $s.Name)`",`n  `"role`": `"$($s.Role)`",`n  `"licence`": `"$(Json $s.Licence)`",`n  `"credit`": `"$(Json $s.Credit)`",`n  `"source`": `"$(Json $s.Source)`"`n}`n"

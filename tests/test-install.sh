@@ -14,14 +14,18 @@ fail() { echo "FAILED: $*" >&2; exit 1; }
 
 src="$work/src"; mkdir -p "$src/samples"
 # curl on Windows is a native program that needs C:/... in a file:// address.
-url_root="$src"
-if command -v cygpath >/dev/null 2>&1; then url_root="/$(cygpath -m "$src")"; fi
+url_root="$src"; arc_url="$work"
+if command -v cygpath >/dev/null 2>&1; then url_root="/$(cygpath -m "$src")"; arc_url="/$(cygpath -m "$work")"; fi
 printf 'sfz one' > "$src/one.sfz"
 printf 'sample a' > "$src/samples/a.flac"
 printf 'licence text' > "$src/LICENSE"
 printf 'sfz two' > "$src/two.sfz"
 sum() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{print $1}'; else shasum -a 256 "$1" | awk '{print $1}'; fi; }
 size() { wc -c < "$1" | tr -d ' '; }
+arc="$work/arc/third-1.0"; mkdir -p "$arc/samples"
+printf 'sfz three' > "$arc/Three.sfz"; printf 'sample b' > "$arc/samples/b.wav"; printf 'read me, CC0' > "$arc/readme.txt"
+printf 'not wanted' > "$arc/Other.sfz"
+tar -C "$work/arc" -cJf "$work/third.tar.xz" third-1.0
 {
     echo "set|first|FreePats|electric-guitars|CC0 1.0|Somebody \"Q\" (First)|https://example.org/first|3|0|"
     echo "file|first|$(sum "$src/one.sfz")|$(size "$src/one.sfz")|file://$url_root/one.sfz|First Guitar.sfz"
@@ -29,6 +33,11 @@ size() { wc -c < "$1" | tr -d ' '; }
     echo "file|first|$(sum "$src/LICENSE")|$(size "$src/LICENSE")|file://$url_root/LICENSE|LICENSE"
     echo "set|second|FreePats|drums|CC BY 4.0|Somebody Else|https://example.org/second|1|7|Drums by Example.org"
     echo "file|second|$(sum "$src/two.sfz")|$(size "$src/two.sfz")|file://$url_root/two.sfz|Second Kit.sfz"
+    echo "set|third|FreePats|acoustic-guitars|GPL|Somebody Three|https://example.org/third|3|$(size "$work/third.tar.xz")|"
+    echo "archive|third|$(sum "$work/third.tar.xz")|$(size "$work/third.tar.xz")|file://$arc_url/third.tar.xz"
+    echo "file|third|$(sum "$arc/Three.sfz")|$(size "$arc/Three.sfz")|archive:third-1.0/Three.sfz|Third.sfz"
+    echo "file|third|$(sum "$arc/samples/b.wav")|$(size "$arc/samples/b.wav")|archive:third-1.0/samples/b.wav|samples/b.wav"
+    echo "file|third|$(sum "$arc/readme.txt")|$(size "$arc/readme.txt")|archive:third-1.0/readme.txt|readme.txt"
 } > "$work/sets.txt"
 export OXIGUITAR_SETS_FILE="$work/sets.txt"
 out="$work/out"
@@ -47,6 +56,11 @@ grep -q 'Somebody \\"Q\\" (First)' "$out/first/oxiguitar-set.json" || fail "cred
 grep -q 'Drums by Example.org' "$out/CREDITS.txt" || fail "notice missing from CREDITS.txt"
 grep -q 'first' "$out/CREDITS.txt" || fail "set missing from CREDITS.txt"
 grep -q 'Drums by Example.org' "$work/log" || fail "notice not shown before the download"
+
+[ "$(cat "$out/third/Third.sfz")" = "sfz three" ] || fail "archive entry missing"
+[ "$(cat "$out/third/samples/b.wav")" = "sample b" ] || fail "archive sample missing"
+[ ! -e "$out/third/Other.sfz" ] || fail "a file that is not listed was kept"
+for left in "$out"/.oxiguitar-*; do [ ! -e "$left" ] || fail "left behind: $left"; done
 
 # Again: nothing changes, nothing fails.
 "$root/install.sh" --yes --sets first --dir "$out" > /dev/null || fail "second run failed"
