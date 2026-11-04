@@ -4,6 +4,8 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-04
+
 ### Changed
 
 - **Installing the `.deb` or `.rpm` installs the sound sets.** The `.deb` asked whether to download them at a priority apt doesn't show, with no as the default, so it never downloaded anything; the `.rpm` only printed a hint. Now the `.deb` asks (at priority high) with yes as the default, so an unattended install downloads all of them, and the `.rpm` downloads them as it installs (`OXIGUITAR_SKIP_SOUNDS=1` skips it). Both install them for every user, and removing the package removes what it installed. A failed download only warns.
