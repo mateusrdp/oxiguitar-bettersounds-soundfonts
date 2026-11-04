@@ -6,7 +6,8 @@
 # its list of sets, the command oxiguitar-install-sounds, and a debconf
 # question that asks, at priority high (so apt shows it), whether to
 # download the sets to /usr/share/oxiguitar/soundfonts as the package is
-# installed. Yes is the default, as installing this package is asking for the
+# installed (it also asks, at high, for the recommended patch of each set or
+# all of them). Yes is the default, as installing this package is asking for the
 # sets: an unattended install downloads them all, and a preseeded "false"
 # (or answering no) downloads nothing. A failed download only warns; purging
 # the package removes the sets it installed. Needs dpkg-deb.
@@ -83,6 +84,17 @@ Default: all
 Description: Sound sets to download (names separated by commas, or "all"):
  Run "oxiguitar-install-sounds --list"
  for the names, sizes and licences.
+
+Template: oxiguitar-bettersounds-soundfonts/patches
+Type: select
+Choices: recommended, all
+Default: recommended
+Description: Which patches of each sound set?
+ Some sets hold several instruments (patches): the clean guitar has 2 and
+ the bass 11 (about 650 MB more). "recommended" installs the one OxiGuitar
+ plays; "all" installs every one, and the MIDI plugin then lists each by
+ name so you can pick any for a track. You can change this later with
+ "oxiguitar-install-sounds --system --patches all".
 TEMPLATES
 
 cat > "$tree/DEBIAN/config" <<'CONFIG'
@@ -94,6 +106,7 @@ db_go || true
 db_get oxiguitar-bettersounds-soundfonts/download
 if [ "$RET" = true ]; then
     db_input high oxiguitar-bettersounds-soundfonts/sets || true
+    db_input high oxiguitar-bettersounds-soundfonts/patches || true
     db_go || true
 fi
 CONFIG
@@ -107,8 +120,10 @@ if [ "\$1" = configure ]; then
     if [ "\$RET" = true ]; then
         db_get oxiguitar-bettersounds-soundfonts/sets
         sets="\${RET:-all}"
+        db_get oxiguitar-bettersounds-soundfonts/patches
+        patches="\${RET:-recommended}"
         # A failed download is not a failed installation: say how to retry.
-        if ! $share/install.sh --yes --system --sets "\$sets"; then
+        if ! $share/install.sh --yes --system --sets "\$sets" --patches "\$patches"; then
             echo "oxiguitar-bettersounds-soundfonts: the sound sets could not be downloaded." >&2
             echo "Run 'oxiguitar-install-sounds --system' to try again." >&2
         fi
