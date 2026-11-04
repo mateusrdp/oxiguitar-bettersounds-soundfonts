@@ -76,6 +76,9 @@ for sid, s in sets.items():
     for f in allfs:
         if not re.fullmatch(r"[0-9a-f]{64}", f[2]):
             errors.append(f"{sid}: bad checksum for {f[5]}")
+        # The installer hands these to curl in a config file, between quotes.
+        if re.search(r'["\\]', f[4] + f[5]):
+            errors.append(f"{sid}: a quote or backslash in {f[5]}")
         if not (f[4].startswith("archive:") if arc else re.match(r"https://raw\.githubusercontent\.com/[^/]+/[^/]+/[0-9a-f]{40}/", f[4])):
             errors.append(f"{sid}: {f[5]} is not pinned to a commit")
         if f[5].startswith(("/", "..")) or "/../" in f[5] or "\\" in f[5]:
