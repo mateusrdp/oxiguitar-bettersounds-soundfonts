@@ -4,6 +4,8 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-04
+
 ### Changed
 
 - **The installers are much faster.** Starting a program for each of the 8,750 files (a download, a checksum, a move) took far longer than the download itself. Now what is already here is checked in one pass, what is missing is fetched by 8 downloads at once (`OXIGUITAR_JOBS` changes the number), each fetching many files over one connection, and what came is checked in one pass again. A rerun with everything in place takes a second or so instead of minutes, and a file missing or cut short is fetched again alone. Without `curl`, `install.sh` still goes one file at a time. `install.ps1` does the same with 8 workers and checks files in its own process.
