@@ -4,6 +4,16 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-04
+
+### Changed
+
+- **The installers are much faster.** Starting a program for each of the 8,750 files (a download, a checksum, a move) took far longer than the download itself. Now what is already here is checked in one pass, what is missing is fetched by 8 downloads at once (`OXIGUITAR_JOBS` changes the number), each fetching many files over one connection, and what came is checked in one pass again. A rerun with everything in place takes a second or so instead of minutes, and a file missing or cut short is fetched again alone. Without `curl`, `install.sh` still goes one file at a time. `install.ps1` does the same with 8 workers and checks files in its own process.
+
+### Fixed
+
+- **A set's older files are removed when it is installed again.** The drum kit changed from FreePats' to DrumGizmo's and both stayed in `drums/`, so the list showed two kits. The installers now remove, from a folder they made (it holds `oxiguitar-set.json`), every file that is not part of this version of the set, and the folders left empty. Folders they did not make are not touched, and the patches you chose to leave out are not "older files": they stay listed in `sets.txt` and are kept.
+
 ## [0.1.5] - 2026-11-04
 
 ### Added
