@@ -210,17 +210,21 @@ fi
 # once, each one program fetching many files over one connection; without
 # it, one file after another.
 download_files() {
-    local list="$1" base="$2" total="$3" here="$4" jobs="${OXIGUITAR_JOBS:-8}" count w pids pid failed=0 cfg before
+    local list="$1" base="$2" total="$3" here="$4" jobs="${OXIGUITAR_JOBS:-8}" count w pids pid failed=0 cfg before cbase
     mkdir -p "$base"
     count="$(wc -l < "$list" | tr -d ' ')"
     case "$jobs" in ''|*[!0-9]*|0) jobs=8 ;; esac
     [ "$jobs" -le "$count" ] || jobs="$count"
     before="$(find "$base" -type f | wc -l | tr -d ' ')"
+    # curl on Windows is not a Git Bash program: it converts the paths it is
+    # given as arguments but not those it reads from a config file.
+    cbase="$base"
+    if command -v cygpath >/dev/null 2>&1; then cbase="$(cygpath -m "$base")"; fi
     if command -v curl >/dev/null 2>&1; then
         pids=""
         for w in $(seq 1 "$jobs"); do
             cfg="$base/.oxiguitar-curl.$$.$w"
-            awk -F'|' -v w="$w" -v j="$jobs" -v d="$base" 'NR % j == w % j { printf "url = \"%s\"\noutput = \"%s/%s\"\n", $5, d, $6 }' "$list" > "$cfg"
+            awk -F'|' -v w="$w" -v j="$jobs" -v d="$cbase" 'NR % j == w % j { printf "url = \"%s\"\noutput = \"%s/%s\"\n", $5, d, $6 }' "$list" > "$cfg"
             curl -fsSL --retry 3 --connect-timeout 20 --create-dirs -K "$cfg" </dev/null &
             pids="$pids $!"
         done
