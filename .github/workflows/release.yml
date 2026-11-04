@@ -61,22 +61,50 @@ jobs:
           lintian --fail-on error --tag-display-limit 0 dist/*.deb
       - name: Install the .deb, then purge it
         run: |
-          sudo DEBIAN_FRONTEND=noninteractive dpkg -i dist/*.deb || { sudo apt-get install -f -y && sudo DEBIAN_FRONTEND=noninteractive dpkg -i dist/*.deb; }
+          tests/fixture-sets.sh "$RUNNER_TEMP/fixture"
+          fixture="$RUNNER_TEMP/fixture/sets.txt"
+          dir=/usr/share/oxiguitar/soundfonts
+          # Answering no downloads nothing.
+          sudo apt-get install -y --no-install-recommends debconf-utils
+          echo 'oxiguitar-bettersounds-soundfonts oxiguitar-bettersounds-soundfonts/download boolean false' | sudo debconf-set-selections
+          sudo env DEBIAN_FRONTEND=noninteractive OXIGUITAR_SETS_FILE="$fixture" dpkg -i dist/*.deb || { sudo apt-get install -f -y && sudo env DEBIAN_FRONTEND=noninteractive OXIGUITAR_SETS_FILE="$fixture" dpkg -i dist/*.deb; }
           oxiguitar-install-sounds --list > list.txt; grep -q '^drums ' list.txt
-          test ! -e /usr/share/oxiguitar/soundfonts/drums   # declined by default: nothing downloaded
-          # A set made by hand is removed with the package; one that is not ours stays.
-          sudo mkdir -p /usr/share/oxiguitar/soundfonts/drums /usr/share/oxiguitar/soundfonts/mine
-          echo '{}' | sudo tee /usr/share/oxiguitar/soundfonts/drums/oxiguitar-set.json >/dev/null
+          test ! -e "$dir/drums"
           sudo dpkg --purge oxiguitar-bettersounds-soundfonts
-          test ! -e /usr/share/oxiguitar/soundfonts/drums
-          test -d /usr/share/oxiguitar/soundfonts/mine
+          # Installing it (an unattended install, the default answer) installs the sets.
+          sudo env DEBIAN_FRONTEND=noninteractive OXIGUITAR_SETS_FILE="$fixture" dpkg -i dist/*.deb
+          test -f "$dir/drums/Kit.sfz"
+          grep -q '"role": "drums"' "$dir/drums/oxiguitar-set.json"
+          # The question is asked at priority high, so apt shows it.
+          sudo dpkg-reconfigure --priority=high -fnoninteractive oxiguitar-bettersounds-soundfonts
+          # A set that is not ours stays when the package goes.
+          sudo mkdir -p "$dir/mine"
+          sudo dpkg --purge oxiguitar-bettersounds-soundfonts
+          test ! -e "$dir/drums"
+          test -d "$dir/mine"
           test ! -e /usr/share/oxiguitar-bettersounds
-      - name: Install the .rpm
+      - name: The .deb asks at priority high
         run: |
+          dpkg-deb -e dist/*.deb "$RUNNER_TEMP/control"
+          grep -q 'db_input high oxiguitar-bettersounds-soundfonts/download' "$RUNNER_TEMP/control/config"
+          grep -q '^Default: true' "$RUNNER_TEMP/control/templates"
+      - name: Install the .rpm, then remove it
+        run: |
+          tests/fixture-sets.sh "$RUNNER_TEMP/fixture-rpm"
+          fixture="$RUNNER_TEMP/fixture-rpm/sets.txt"
+          dir=/usr/share/oxiguitar/soundfonts
           sudo apt-get install -y --no-install-recommends rpm
           rpm -qp --requires dist/*.rpm
-          sudo rpm -i --nodeps --nosignature dist/*.rpm
+          # Skipped on request.
+          sudo env OXIGUITAR_SKIP_SOUNDS=1 OXIGUITAR_SETS_FILE="$fixture" rpm -i --nodeps --nosignature dist/*.rpm
           oxiguitar-install-sounds --list > list.txt; grep -q '^drums ' list.txt
+          test ! -e "$dir/drums"
+          sudo rpm -e oxiguitar-bettersounds-soundfonts
+          # Installed by default.
+          sudo env OXIGUITAR_SETS_FILE="$fixture" rpm -i --nodeps --nosignature dist/*.rpm
+          test -f "$dir/drums/Kit.sfz"
+          sudo rpm -e oxiguitar-bettersounds-soundfonts
+          test ! -e "$dir/drums"
       - uses: actions/upload-artifact@v7
         with:
           name: oxiguitar-bettersounds-soundfonts-${{ steps.version.outputs.version }}
