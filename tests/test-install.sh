@@ -88,6 +88,21 @@ rm -f "$out/first/samples/a.flac"; printf 'cut' > "$out/first/First Guitar.sfz"
 [ "$(cat "$out/first/samples/a.flac")" = "$(cat "$src/samples/a.flac")" ] || fail "a missing file was not fetched again"
 [ "$(cat "$out/first/First Guitar.sfz")" = "$(cat "$src/one.sfz")" ] || fail "a file cut short was not fetched again"
 for left in "$out"/.oxiguitar-*; do [ ! -e "$left" ] || fail "left behind: $left"; done
+# What is already here is recognised without fetching: with every address
+# dead the run still passes, and with a sha256sum whose -c speaks another
+# language (as coreutils' does in some) it must not matter.
+mkdir -p "$work/shim"
+cat > "$work/shim/sha256sum" <<'SHIM'
+#!/bin/sh
+real="$(PATH="${PATH#*:}" command -v sha256sum)"
+[ "$1" = "-c" ] && { "$real" "$@" | sed 's/: OK$/: Aceito/; s/: FAILED/: FALHOU/'; exit 0; }
+exec "$real" "$@"
+SHIM
+chmod +x "$work/shim/sha256sum"
+sed -E 's#^(file\|first\|[^|]*\|[^|]*\|)[^|]*#\1file:///nonexistent/gone#' "$work/sets.txt" > "$work/dead.txt"
+PATH="$work/shim:$PATH" OXIGUITAR_SETS_FILE="$work/dead.txt" "$root/install.sh" --yes --sets first --dir "$out" > "$work/log" 2>&1 || { cat "$work/log"; fail "installed files were not recognised with dead addresses"; }
+if grep -q "could not" "$work/log"; then fail "tried to fetch what was already here"; fi
+
 # One download at a time works the same.
 rm -rf "$out/first"; OXIGUITAR_JOBS=1 "$root/install.sh" --yes --sets first --dir "$out" > /dev/null || fail "one job failed"
 [ -e "$out/first/samples/a.flac" ] || fail "one job did not install"
