@@ -1,0 +1,50 @@
+# Tells the package repositories when the maintainer publishes a release: the
+# apt and dnf repositories are rebuilt from the latest published release
+# (oxiguitar-packages, repositories.txt). It needs the secret PACKAGES_TOKEN,
+# a token that can dispatch to mateusrdp/oxiguitar-packages; without it
+# nothing is sent and the run says so.
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The release's tag, such as v0.1.0
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check the release holds every file
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          v="${TAG#v}"
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir release
+          cd release
+          for f in install.sh install.ps1 sets.txt SHA256SUMS "oxiguitar-bettersounds-soundfonts_${v}_all.deb" \
+                   "oxiguitar-bettersounds-soundfonts-${v}-1.noarch.rpm" "oxiguitar-bettersounds-soundfonts-${v}.zip"; do
+            [ -f "$f" ] || { echo "::error::The release lacks $f"; exit 1; }
+          done
+          sha256sum -c SHA256SUMS
+      - name: Tell the package repositories
+        env:
+          PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          if [[ -z "$PACKAGES_TOKEN" ]]; then
+            echo "::notice::PACKAGES_TOKEN isn't set: the package repositories were not told about $TAG."
+            exit 0
+          fi
+          payload="$(jq -nc --arg tag "$TAG" --arg repo "$GITHUB_REPOSITORY" \
+            '{event_type: "plugin-published", client_payload: {plugin: "bettersounds-soundfonts", tag: $tag, repository: $repo}}')"
+          GH_TOKEN="$PACKAGES_TOKEN" gh api repos/mateusrdp/oxiguitar-packages/dispatches --method POST --input - <<< "$payload"
+          echo "Told mateusrdp/oxiguitar-packages."

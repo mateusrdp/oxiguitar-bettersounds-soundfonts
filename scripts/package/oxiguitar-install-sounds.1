@@ -1,0 +1,32 @@
+.TH OXIGUITAR-INSTALL-SOUNDS 1 "2026" "oxiguitar-bettersounds-soundfonts" "User commands"
+.SH NAME
+oxiguitar-install-sounds \- download OxiGuitar's recommended sound sets
+.SH SYNOPSIS
+.B oxiguitar-install-sounds
+[\fB\-\-list\fR] [\fB\-\-sets\fR \fINAMES\fR] [\fB\-\-dir\fR \fIDIR\fR] [\fB\-\-system\fR] [\fB\-\-yes\fR] [\fB\-\-uninstall\fR]
+.SH DESCRIPTION
+Shows each sound set with its size, licence, author and download hosts,
+asks for confirmation, then downloads the files, checks each against a
+pinned SHA-256 and installs them with an oxiguitar-set.json and a
+CREDITS.txt. Nothing is downloaded before you confirm.
+.SH OPTIONS
+.TP
+.B \-\-list
+Show the sets and exit.
+.TP
+.BI \-\-sets " NAMES"
+Install these sets (comma-separated), or "all". Without it you are asked.
+.TP
+.BI \-\-dir " DIR"
+Install into DIR instead of your OxiGuitar soundfonts folder.
+.TP
+.B \-\-system
+Install for every user, into /usr/share/oxiguitar/soundfonts (as root).
+.TP
+.B \-\-yes
+Do not ask for confirmation; installs all sets unless \-\-sets is given.
+.TP
+.B \-\-uninstall
+Remove the sets named with \-\-sets.
+.SH SEE ALSO
+https://github.com/mateusrdp/oxiguitar-bettersounds-soundfonts
