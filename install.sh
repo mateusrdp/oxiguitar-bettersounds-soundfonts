@@ -248,5 +248,5 @@ credits="$dir/CREDITS.txt"
 } > "$credits"
 
 echo
-echo "Done. Open OxiGuitar's settings to pick the sets for your tracks."
+echo "Done. OxiGuitar plays each kind of track with its set from the next time it plays; Tools, Plugins, MIDI (SoundFont, SFZ), Settings changes them."
 echo "Credits are in $credits"

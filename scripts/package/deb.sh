@@ -4,10 +4,12 @@
 #
 # Builds oxiguitar-bettersounds-soundfonts_VERSION_all.deb: the installer,
 # its list of sets, the command oxiguitar-install-sounds, and a debconf
-# question that offers to download the sets (to /usr/share/oxiguitar/soundfonts)
-# once the package is installed. Declining is the default, so an unattended
-# install downloads nothing. A failed download only warns; purging the
-# package removes the sets it installed. Needs dpkg-deb.
+# question that asks, at priority high (so apt shows it), whether to
+# download the sets to /usr/share/oxiguitar/soundfonts as the package is
+# installed. Yes is the default, as installing this package is asking for the
+# sets: an unattended install downloads them all, and a preseeded "false"
+# (or answering no) downloads nothing. A failed download only warns; purging
+# the package removes the sets it installed. Needs dpkg-deb.
 #
 # Usage: scripts/package/deb.sh VERSION OUT-DIR
 set -euo pipefail
@@ -66,12 +68,14 @@ CONTROL
 cat > "$tree/DEBIAN/templates" <<'TEMPLATES'
 Template: oxiguitar-bettersounds-soundfonts/download
 Type: boolean
-Default: false
+Default: true
 Description: Download OxiGuitar's recommended sound sets now?
  The sound sets are large (about 1.2 GB in all) and are downloaded from their
- authors, not from this package. You can say no now and run
- "oxiguitar-install-sounds" later, as yourself, to install them for your
- own account, or as root with "--system" for every user.
+ authors, not from this package; each file is checked against a pinned
+ checksum. They are installed for every user, and OxiGuitar plays with
+ them as soon as they are there. If you say no, run
+ "oxiguitar-install-sounds --system" later, or "oxiguitar-install-sounds"
+ as yourself for your own account.
 
 Template: oxiguitar-bettersounds-soundfonts/sets
 Type: string
@@ -85,11 +89,11 @@ cat > "$tree/DEBIAN/config" <<'CONFIG'
 #!/bin/sh
 set -e
 . /usr/share/debconf/confmodule
-db_input medium oxiguitar-bettersounds-soundfonts/download || true
+db_input high oxiguitar-bettersounds-soundfonts/download || true
 db_go || true
 db_get oxiguitar-bettersounds-soundfonts/download
 if [ "$RET" = true ]; then
-    db_input medium oxiguitar-bettersounds-soundfonts/sets || true
+    db_input high oxiguitar-bettersounds-soundfonts/sets || true
     db_go || true
 fi
 CONFIG

@@ -33,7 +33,7 @@ tar -C "$work/arc" -cJf "$work/third.tar.xz" third-1.0
     echo "file|first|$(sum "$src/LICENSE")|$(size "$src/LICENSE")|file://$url_root/LICENSE|LICENSE"
     echo "set|second|FreePats|drums|CC BY 4.0|Somebody Else|https://example.org/second|1|7|Drums by Example.org"
     echo "file|second|$(sum "$src/two.sfz")|$(size "$src/two.sfz")|file://$url_root/two.sfz|Second Kit.sfz"
-    echo "set|third|FreePats|acoustic-guitars|GPL|Somebody Three|https://example.org/third|3|$(size "$work/third.tar.xz")|"
+    echo "set|third|FreePats|steel-guitars|GPL|Somebody Three|https://example.org/third|3|$(size "$work/third.tar.xz")|"
     echo "archive|third|$(sum "$work/third.tar.xz")|$(size "$work/third.tar.xz")|file://$arc_url/third.tar.xz"
     echo "file|third|$(sum "$arc/Three.sfz")|$(size "$arc/Three.sfz")|archive:third-1.0/Three.sfz|Third.sfz"
     echo "file|third|$(sum "$arc/samples/b.wav")|$(size "$arc/samples/b.wav")|archive:third-1.0/samples/b.wav|samples/b.wav"

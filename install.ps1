@@ -177,5 +177,5 @@ foreach ($s in $catalog.Values) {
 [IO.File]::WriteAllText((Join-Path $Dir "CREDITS.txt"), $credits.ToString(), $utf8)
 
 ""
-"Done. Open OxiGuitar's settings to pick the sets for your tracks."
+"Done. OxiGuitar plays each kind of track with its set from the next time it plays; Tools, Plugins, MIDI (SoundFont, SFZ), Settings changes them."
 "Credits are in $(Join-Path $Dir 'CREDITS.txt')"
