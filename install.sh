@@ -193,6 +193,11 @@ mkdir -p "$dir"
 for id in $chosen; do
     set_dir="$dir/$id"
     echo "== $id"
+    # A folder this installer made earlier (it holds oxiguitar-set.json) is
+    # its own: whatever an older version of the set left there is removed
+    # below, once the new files are in.
+    owned=0
+    [ -f "$set_dir/oxiguitar-set.json" ] && owned=1
     n=0
     count="$(field "$id" 8)"
     withall=0
@@ -252,6 +257,22 @@ for id in $chosen; do
     fi
     rm -f "$pending"
     echo
+    # Files an older version of the set left behind (the drum kit changed
+    # from one to another and both showed in the list) are not part of it.
+    if [ "$owned" = 1 ]; then
+        expected="$dir/.oxiguitar-expected.$$"
+        awk -F'|' -v id="$id" '$1 == "file" && $2 == id { print $6 }' "$sets_file" > "$expected"
+        find "$set_dir" -type f > "$expected.found"
+        while IFS= read -r found; do
+            rel="${found#"$set_dir"/}"
+            [ "$rel" = oxiguitar-set.json ] && continue
+            grep -qxF -- "$rel" "$expected" && continue
+            rm -f -- "$found"
+            echo "  removed $rel (not part of this version of the set)"
+        done < "$expected.found"
+        rm -f "$expected" "$expected.found"
+        find "$set_dir" -depth -type d -empty -exec rmdir {} \; 2>/dev/null || true
+    fi
     role="$(field "$id" 4)"
     {
         printf '{\n  "name": "%s",\n  "role": "%s",\n  "licence": "%s",\n  "credit": "%s",\n  "source": "%s"' \
