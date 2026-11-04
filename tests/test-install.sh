@@ -82,6 +82,16 @@ printf 'old' > "$out/first/Old Kit.sfz"; printf 'old' > "$out/first/old kit/x.fl
 [ "$(cat "$out/mine/keep.sfz")" = mine ] || fail "a file outside the sets was touched"
 grep -q 'removed Old Kit.sfz' "$work/log" || fail "the removal was not said"
 
+# A file missing, one cut short: the next run brings both back (and says nothing of the rest).
+rm -f "$out/first/samples/a.flac"; printf 'cut' > "$out/first/First Guitar.sfz"
+"$root/install.sh" --yes --sets first --dir "$out" > /dev/null || fail "repair run failed"
+[ "$(cat "$out/first/samples/a.flac")" = "$(cat "$src/samples/a.flac")" ] || fail "a missing file was not fetched again"
+[ "$(cat "$out/first/First Guitar.sfz")" = "$(cat "$src/one.sfz")" ] || fail "a file cut short was not fetched again"
+for left in "$out"/.oxiguitar-*; do [ ! -e "$left" ] || fail "left behind: $left"; done
+# One download at a time works the same.
+rm -rf "$out/first"; OXIGUITAR_JOBS=1 "$root/install.sh" --yes --sets first --dir "$out" > /dev/null || fail "one job failed"
+[ -e "$out/first/samples/a.flac" ] || fail "one job did not install"
+
 # The recommended instrument only, by default: the others are fetched on request.
 [ ! -e "$out/first/Alt.sfz" ] || fail "an extra patch was installed without being asked for"
 if grep -q '"patches"' "$out/first/oxiguitar-set.json"; then fail "patches named though none are installed"; fi

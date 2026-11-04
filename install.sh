@@ -187,6 +187,87 @@ fetch() { # URL FILE
     fi
 }
 
+# check_ok SUMS: given lines "sum  path", prints the paths whose file is there
+# and has that sum, checking them all in one program where it can.
+if command -v sha256sum >/dev/null 2>&1; then
+    check_ok() { sha256sum -c "$1" 2>/dev/null | sed -n 's/: OK$//p' || true; }
+elif command -v shasum >/dev/null 2>&1; then
+    check_ok() { shasum -a 256 -c "$1" 2>/dev/null | sed -n 's/: OK$//p' || true; }
+else
+    check_ok() {
+        local want path
+        while read -r want path; do
+            [ -f "$path" ] && [ "$(sha256 "$path")" = "$want" ] && echo "$path"
+        done < "$1"
+        return 0
+    }
+fi
+
+# download_files LIST DIR TOTAL HERE: fetch the files LIST names (file lines of
+# sets.txt) into DIR, then check all of them at once and throw away any that
+# is not right (a file cut short is caught the same way, by its sum, the next
+# time the installer runs). With curl, OXIGUITAR_JOBS (8) downloads run at
+# once, each one program fetching many files over one connection; without
+# it, one file after another.
+download_files() {
+    local list="$1" base="$2" total="$3" here="$4" jobs="${OXIGUITAR_JOBS:-8}" count w pids pid failed=0 cfg before cbase
+    mkdir -p "$base"
+    count="$(wc -l < "$list" | tr -d ' ')"
+    case "$jobs" in ''|*[!0-9]*|0) jobs=8 ;; esac
+    [ "$jobs" -le "$count" ] || jobs="$count"
+    before="$(find "$base" -type f | wc -l | tr -d ' ')"
+    # curl on Windows is not a Git Bash program: it converts the paths it is
+    # given as arguments but not those it reads from a config file.
+    cbase="$base"
+    if command -v cygpath >/dev/null 2>&1; then cbase="$(cygpath -m "$base")"; fi
+    if command -v curl >/dev/null 2>&1; then
+        pids=""
+        for w in $(seq 1 "$jobs"); do
+            cfg="$base/.oxiguitar-curl.$$.$w"
+            awk -F'|' -v w="$w" -v j="$jobs" -v d="$cbase" 'NR % j == w % j { printf "url = \"%s\"\noutput = \"%s/%s\"\n", $5, d, $6 }' "$list" > "$cfg"
+            curl -fsSL --retry 3 --connect-timeout 20 --create-dirs -K "$cfg" </dev/null &
+            pids="$pids $!"
+        done
+        while :; do
+            local alive=0 now
+            for pid in $pids; do kill -0 "$pid" 2>/dev/null && alive=1; done
+            now="$(find "$base" -type f | wc -l | tr -d ' ')"
+            printf '\r  %d/%d' "$((here + now - before))" "$total"
+            [ "$alive" = 1 ] || break
+            sleep 1
+        done
+        for pid in $pids; do wait "$pid" || failed=1; done
+        rm -f "$base"/.oxiguitar-curl."$$".*
+    else
+        local n=0 url rel
+        while IFS='|' read -r _ _ _ _ url rel _; do
+            n=$((n + 1))
+            printf '\r  %d/%d' "$((here + n))" "$total"
+            mkdir -p "$(dirname "$base/$rel")"
+            fetch "$url" "$base/$rel" || { failed=1; rm -f "$base/$rel"; }
+        done < "$list"
+    fi
+    # Checked as a whole; what is not right is thrown away, and the first of
+    # those stops everything.
+    local sums="$base/.oxiguitar-partsums.$$" bad
+    awk -F'|' -v d="$base" '{ print $3 "  " d "/" $6 }' "$list" > "$sums"
+    check_ok "$sums" > "$sums.ok"
+    bad="$(awk -F'|' -v d="$base" -v okfile="$sums.ok" '
+        BEGIN { while ((getline l < okfile) > 0) ok[l] = 1 }
+        !((d "/" $6) in ok) { print $6 }' "$list")"
+    rm -f "$sums" "$sums.ok"
+    echo
+    if [ -n "$bad" ]; then
+        local first
+        first="$(printf '%s\n' "$bad" | head -n 1)"
+        printf '%s\n' "$bad" | while IFS= read -r rel; do rm -f -- "$base/$rel"; done
+        if [ "$failed" = 1 ]; then
+            die "could not download $first (and maybe others); what came is kept, run it again"
+        fi
+        die "$first does not match the checksum in sets.txt; it was thrown away. Nothing from it is installed."
+    fi
+}
+
 json_escape() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
 
 mkdir -p "$dir"
@@ -198,36 +279,35 @@ for id in $chosen; do
     # below, once the new files are in.
     owned=0
     [ -f "$set_dir/oxiguitar-set.json" ] && owned=1
-    n=0
-    count="$(field "$id" 8)"
     withall=0
-    case "$with_extra" in *" $id "*) withall=1; count=$((count + $(extra_files "$id"))) ;; esac
+    case "$with_extra" in *" $id "*) withall=1 ;; esac
     # The file lines of this set, read from a copy so the loop can fetch.
     list_file="$dir/.oxiguitar-files.$$"
     awk -F'|' -v id="$id" -v all="$withall" '$1 == "file" && $2 == id && ($7 != "extra" || all == 1)' "$sets_file" > "$list_file"
+    total_files="$(wc -l < "$list_file" | tr -d ' ')"
     pending="$dir/.oxiguitar-pending.$$"
     : > "$pending"
-    # shellcheck disable=SC2094,SC2034
-    while IFS='|' read -r _ _ sum size url rel _; do
-        n=$((n + 1))
-        target="$set_dir/$rel"
-        mkdir -p "$(dirname "$target")"
-        if [ -f "$target" ] && [ "$(sha256 "$target")" = "$sum" ]; then
-            continue
-        fi
-        case "$url" in
-            archive:*) printf '%s|%s|%s\n' "${url#archive:}" "$sum" "$rel" >> "$pending"; continue ;;
-        esac
-        part="$target.part"
-        printf '\r  %d/%d' "$n" "$count"
-        fetch "$url" "$part" || { rm -f "$part" "$list_file"; die "could not download $url"; }
-        if [ "$(sha256 "$part")" != "$sum" ]; then
-            rm -f "$part" "$list_file"
-            die "$rel does not match the checksum in sets.txt; it was thrown away. Nothing from it is installed."
-        fi
-        mv "$part" "$target"
-    done < "$list_file"
-    rm -f "$list_file"
+    # Thousands of small files: starting a program for each one is what takes
+    # the time, not the download. So what is already here is checked in one
+    # pass, what is missing is fetched by several downloads at once, each
+    # reusing its connection for many files, and what came is checked in one
+    # pass again.
+    sums="$dir/.oxiguitar-sums.$$"
+    awk -F'|' -v d="$set_dir" '{ print $3 "  " d "/" $6 }' "$list_file" > "$sums"
+    check_ok "$sums" > "$sums.ok"
+    todo="$dir/.oxiguitar-todo.$$"
+    awk -F'|' -v d="$set_dir" -v okfile="$sums.ok" -v pending="$pending" -v todo="$todo" '
+        BEGIN { while ((getline l < okfile) > 0) ok[l] = 1 }
+        (d "/" $6) in ok { next }
+        $5 ~ /^archive:/ { print substr($5, 9) "|" $3 "|" $6 >> pending; next }
+        { print > todo }' "$list_file"
+    rm -f "$sums" "$sums.ok" "$list_file"
+    [ -f "$todo" ] || : > "$todo"
+    todo_files="$(wc -l < "$todo" | tr -d ' ')"
+    if [ "$todo_files" -gt 0 ]; then
+        download_files "$todo" "$set_dir" "$total_files" "$((total_files - todo_files))"
+    fi
+    rm -f "$todo"
     # A set that is one archive: fetched once, and only the files listed for
     # it are taken out of it, each checked on its own.
     if [ -s "$pending" ]; then
@@ -261,15 +341,13 @@ for id in $chosen; do
     # from one to another and both showed in the list) are not part of it.
     if [ "$owned" = 1 ]; then
         expected="$dir/.oxiguitar-expected.$$"
-        awk -F'|' -v id="$id" '$1 == "file" && $2 == id { print $6 }' "$sets_file" > "$expected"
-        find "$set_dir" -type f > "$expected.found"
-        while IFS= read -r found; do
-            rel="${found#"$set_dir"/}"
+        awk -F'|' -v id="$id" '$1 == "file" && $2 == id { print $6 }' "$sets_file" | LC_ALL=C sort > "$expected"
+        (cd "$set_dir" && find . -type f | sed 's|^\./||' | LC_ALL=C sort) > "$expected.found"
+        LC_ALL=C comm -13 "$expected" "$expected.found" | while IFS= read -r rel; do
             [ "$rel" = oxiguitar-set.json ] && continue
-            grep -qxF -- "$rel" "$expected" && continue
-            rm -f -- "$found"
+            rm -f -- "$set_dir/$rel"
             echo "  removed $rel (not part of this version of the set)"
-        done < "$expected.found"
+        done
         rm -f "$expected" "$expected.found"
         find "$set_dir" -depth -type d -empty -exec rmdir {} \; 2>/dev/null || true
     fi
