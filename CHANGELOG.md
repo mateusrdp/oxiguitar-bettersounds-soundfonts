@@ -4,6 +4,8 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-04
+
 ### Added
 
 - The sound sets (clean, overdriven and distorted electric guitar, nylon and steel-string guitar, ukulele, bass, drums) and the installers `install.sh` and `install.ps1`.
