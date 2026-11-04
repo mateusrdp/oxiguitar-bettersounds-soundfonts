@@ -4,6 +4,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-04
+
+### Fixed
+
+- **0.2.0 downloaded everything again, then stopped with "does not match the checksum" on systems whose language is not English.** The installer read the words `OK` and `FAILED` from `sha256sum -c`, which coreutils translates in some languages, so it found no file right (it re-fetched all of them, which showed as `145/137`) and then no download right either. It now reads only the sums (never the words) from `sha256sum`/`shasum`, and the progress count no longer includes its own temporary files.
+
 ## [0.2.0] - 2026-11-04
 
 ### Changed

@@ -188,20 +188,30 @@ fetch() { # URL FILE
 }
 
 # check_ok SUMS: given lines "sum  path", prints the paths whose file is there
-# and has that sum, checking them all in one program where it can.
+# and has that sum. The files go through one program, for the sums only: its
+# own words ("OK", "FAILED") are translated in some languages, so they are
+# never read.
 if command -v sha256sum >/dev/null 2>&1; then
-    check_ok() { sha256sum -c "$1" 2>/dev/null | sed -n 's/: OK$//p' || true; }
+    hash_many() { LC_ALL=C xargs -0 sha256sum 2>/dev/null; }
 elif command -v shasum >/dev/null 2>&1; then
-    check_ok() { shasum -a 256 -c "$1" 2>/dev/null | sed -n 's/: OK$//p' || true; }
+    hash_many() { LC_ALL=C xargs -0 shasum -a 256 2>/dev/null; }
 else
-    check_ok() {
-        local want path
-        while read -r want path; do
-            [ -f "$path" ] && [ "$(sha256 "$path")" = "$want" ] && echo "$path"
-        done < "$1"
+    hash_many() {
+        local p
+        while IFS= read -r -d '' p; do
+            [ -f "$p" ] && printf '%s  %s\n' "$(sha256 "$p")" "$p"
+        done
         return 0
     }
 fi
+check_ok() {
+    [ -s "$1" ] || return 0
+    sed 's/^[^ ]*  //' "$1" | tr '\n' '\0' | { hash_many || true; } | awk -v sums="$1" '
+        BEGIN {
+            while ((getline l < sums) > 0) { want[substr(l, 67)] = substr(l, 1, 64) }
+        }
+        substr($0, 1, 1) != "\\" && substr($0, 67) in want && substr($0, 1, 64) == want[substr($0, 67)] { print substr($0, 67) }'
+}
 
 # download_files LIST DIR TOTAL HERE: fetch the files LIST names (file lines of
 # sets.txt) into DIR, then check all of them at once and throw away any that
@@ -215,7 +225,7 @@ download_files() {
     count="$(wc -l < "$list" | tr -d ' ')"
     case "$jobs" in ''|*[!0-9]*|0) jobs=8 ;; esac
     [ "$jobs" -le "$count" ] || jobs="$count"
-    before="$(find "$base" -type f | wc -l | tr -d ' ')"
+    before="$(find "$base" -type f ! -name '.oxiguitar-*' | wc -l | tr -d ' ')"
     # curl on Windows is not a Git Bash program: it converts the paths it is
     # given as arguments but not those it reads from a config file.
     cbase="$base"
@@ -231,7 +241,7 @@ download_files() {
         while :; do
             local alive=0 now
             for pid in $pids; do kill -0 "$pid" 2>/dev/null && alive=1; done
-            now="$(find "$base" -type f | wc -l | tr -d ' ')"
+            now="$(find "$base" -type f ! -name '.oxiguitar-*' | wc -l | tr -d ' ')"
             printf '\r  %d/%d' "$((here + now - before))" "$total"
             [ "$alive" = 1 ] || break
             sleep 1
