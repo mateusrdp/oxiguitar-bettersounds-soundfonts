@@ -4,6 +4,16 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added
+
+- **Black and Green Guitars** (Karoryfer Samples, CC0): `black-and-green-guitars` for the clean guitars row, with the green guitar's hammer-on program (`06-green_hammer-on`) as the one that plays by itself; the other ten programs (keyswitched, twang, staccato, the black Hofner and the combination) come with "all patches". The FreePats clean guitar stays installed, to pick, with the role `none` (it is not played by itself, so the choice for the row is not left to chance).
+
+### Changed
+
+- **The drum kit is the full DrumGizmo MuldjordKit** (stereo mix of every microphone, 347 MB, sfzinstruments/DrumGizmo.MuldjordKit), not FreePats' reduced version (139 MB), which had far fewer sounds. It is listed as `DrumGizmo: MuldjordKit (stereo)`.
+- The installers' download is about 1.5 GB in all.
+- `scripts/pin.sh` reads an instrument as a player does: `#include` files are placed where they stand, `#define $name value` replaces `$name` after it, and several includes may share a line (the DrumGizmo kit needs all three). `none` is a role of `sets.in` for a set that is only to be picked.
+
 ## [0.1.3] - 2026-11-04
 
 ### Added

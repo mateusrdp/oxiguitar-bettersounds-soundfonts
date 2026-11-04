@@ -70,7 +70,7 @@ Template: oxiguitar-bettersounds-soundfonts/download
 Type: boolean
 Default: true
 Description: Download OxiGuitar's recommended sound sets now?
- The sound sets are large (about 1.2 GB in all) and are downloaded from their
+ The sound sets are large (about 1.5 GB in all) and are downloaded from their
  authors, not from this package; each file is checked against a pinned
  checksum. They are installed for every user, and OxiGuitar plays with
  them as soon as they are there. If you say no, run
