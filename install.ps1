@@ -140,6 +140,10 @@ try {
         $s = $catalog[$id]
         $setDir = Join-Path $Dir $id
         "== $id"
+        # A folder this installer made earlier (it holds oxiguitar-set.json)
+        # is its own: what an older version of the set left there is removed
+        # below, once the new files are in.
+        $owned = Test-Path -LiteralPath (Join-Path $setDir "oxiguitar-set.json")
         $n = 0
         $count = $s.Count
         if ($withExtra[$id]) { $count += $extras[$id].Count }
@@ -187,6 +191,20 @@ try {
             }
         }
         ""
+        if ($owned) {
+            $expected = @{}
+            foreach ($f in $files[$id]) { $expected[$f.Path] = $true }
+            $setRoot = (Resolve-Path -LiteralPath $setDir).Path.TrimEnd("\", "/")
+            foreach ($item in @(Get-ChildItem -LiteralPath $setDir -Recurse -File -Force)) {
+                $rel = $item.FullName.Substring($setRoot.Length + 1) -replace "\\", "/"
+                if ($rel -eq "oxiguitar-set.json" -or $expected.ContainsKey($rel)) { continue }
+                Remove-Item -LiteralPath $item.FullName -Force
+                "  removed $rel (not part of this version of the set)"
+            }
+            foreach ($d in @(Get-ChildItem -LiteralPath $setDir -Recurse -Directory -Force | Sort-Object { $_.FullName.Length } -Descending)) {
+                if (-not (Get-ChildItem -LiteralPath $d.FullName -Force)) { Remove-Item -LiteralPath $d.FullName -Force }
+            }
+        }
         $json = "{`n  `"name`": `"$(Json $s.Name)`",`n  `"role`": `"$($s.Role)`",`n  `"licence`": `"$(Json $s.Licence)`",`n  `"credit`": `"$(Json $s.Credit)`",`n  `"source`": `"$(Json $s.Source)`""
         # With the other patches here, the file names each instrument, so the
         # MIDI plugin lists them by name and plays the recommended one.

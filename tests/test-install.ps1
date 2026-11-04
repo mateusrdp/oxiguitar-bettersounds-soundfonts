@@ -71,6 +71,17 @@ try {
     try { & "$root/install.ps1" -Yes -Patches some -Sets first -Dir $out | Out-Null } catch { $bad = $true }
     if (-not $bad) { Fail "an invalid -Patches value was accepted" }
     & "$root/install.ps1" -Yes -Sets first -Dir $out | Out-Null   # again: nothing changes
+    # What an older version of a set left in its folder goes; a folder this installer did not make stays.
+    New-Item -ItemType Directory -Force -Path (Join-Path $out "first/old kit"), (Join-Path $out "mine") | Out-Null
+    [IO.File]::WriteAllText((Join-Path $out "first/Old Kit.sfz"), "old")
+    [IO.File]::WriteAllText((Join-Path $out "first/old kit/x.flac"), "old")
+    [IO.File]::WriteAllText((Join-Path $out "mine/keep.sfz"), "mine")
+    $log = (& "$root/install.ps1" -Yes -Sets first -Dir $out) -join "`n"
+    if (Test-Path -LiteralPath (Join-Path $out "first/Old Kit.sfz")) { Fail "a file of an older version was kept" }
+    if (Test-Path -LiteralPath (Join-Path $out "first/old kit")) { Fail "a folder of an older version was kept" }
+    if (-not (Test-Path -LiteralPath (Join-Path $out "first/First Guitar.sfz"))) { Fail "a file of the set was removed" }
+    if ([IO.File]::ReadAllText((Join-Path $out "mine/keep.sfz")) -ne "mine") { Fail "a file outside the sets was touched" }
+    if (-not $log.Contains("removed Old Kit.sfz")) { Fail "the removal was not said" }
     Put "two.sfz" "tampered"
     Remove-Item -Recurse -Force (Join-Path $out "second")
     $refused = $false

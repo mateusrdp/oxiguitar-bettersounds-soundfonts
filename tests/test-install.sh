@@ -70,6 +70,17 @@ for left in "$out"/.oxiguitar-*; do [ ! -e "$left" ] || fail "left behind: $left
 # Again: nothing changes, nothing fails.
 "$root/install.sh" --yes --sets first --dir "$out" > /dev/null || fail "second run failed"
 
+# What an older version of a set left in its folder goes; a folder this
+# installer did not make is not touched.
+mkdir -p "$out/first/old kit" "$out/mine"
+printf 'old' > "$out/first/Old Kit.sfz"; printf 'old' > "$out/first/old kit/x.flac"; printf 'mine' > "$out/mine/keep.sfz"
+"$root/install.sh" --yes --sets first --dir "$out" > "$work/log" || fail "run over an older version failed"
+[ ! -e "$out/first/Old Kit.sfz" ] || fail "a file of an older version was kept"
+[ ! -e "$out/first/old kit" ] || fail "a folder of an older version was kept"
+[ -e "$out/first/First Guitar.sfz" ] && [ -e "$out/first/samples/a.flac" ] || fail "a file of the set was removed"
+[ "$(cat "$out/mine/keep.sfz")" = mine ] || fail "a file outside the sets was touched"
+grep -q 'removed Old Kit.sfz' "$work/log" || fail "the removal was not said"
+
 # The recommended instrument only, by default: the others are fetched on request.
 [ ! -e "$out/first/Alt.sfz" ] || fail "an extra patch was installed without being asked for"
 if grep -q '"patches"' "$out/first/oxiguitar-set.json"; then fail "patches named though none are installed"; fi

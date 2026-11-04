@@ -4,6 +4,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+
+- **A set's older files are removed when it is installed again.** The drum kit changed from FreePats' to DrumGizmo's and both stayed in `drums/`, so the list showed two kits. The installers now remove, from a folder they made (it holds `oxiguitar-set.json`), every file that is not part of this version of the set, and the folders left empty. Folders they did not make are not touched, and the patches you chose to leave out are not "older files": they stay listed in `sets.txt` and are kept.
+
 ## [0.1.5] - 2026-11-04
 
 ### Added
