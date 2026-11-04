@@ -7,6 +7,7 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 ### Changed
 
 - **Installing the `.deb` or `.rpm` installs the sound sets.** The `.deb` asked whether to download them at a priority apt doesn't show, with no as the default, so it never downloaded anything; the `.rpm` only printed a hint. Now the `.deb` asks (at priority high) with yes as the default, so an unattended install downloads all of them, and the `.rpm` downloads them as it installs (`OXIGUITAR_SKIP_SOUNDS=1` skips it). Both install them for every user, and removing the package removes what it installed. A failed download only warns.
+- The acoustic sets name the two new rows: `nylon-guitar` and `ukulele` the role `nylon-guitars`, `steel-guitar` `steel-guitars` (they said `acoustic-guitars`, one row for both). The MIDI plugin before its split of the row reads the new names as no role.
 - OxiGuitar's MIDI plugin plays each set for the row its `oxiguitar-set.json` names without a pick (needs oxiguitar-midi after 0.2.0); the installer's closing message says so.
 
 ## [0.1.1] - 2026-11-04

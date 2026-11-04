@@ -374,7 +374,7 @@ file|distorted-guitar|d796a51997f681da8dc5e649ef15eda033fa45b3ab7a45578b5d17ce9c
 file|distorted-guitar|7ee986dbadc05b7684bf2ea9b4547a8d72865d3329327b76e7e93d51a2c95e71|1637313|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist1/bbae17f0ad16f5edd7ec22178d181f3e3f6696fa/samples/bridge/G4_s6_02.flac|samples/bridge/G4_s6_02.flac
 file|distorted-guitar|a123ea05ca427571aca63c33e00a9278a946e058c2443cecdbd63b2ca07b2c7b|1343783|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist1/bbae17f0ad16f5edd7ec22178d181f3e3f6696fa/samples/bridge/G4_s6_03.flac|samples/bridge/G4_s6_03.flac
 file|distorted-guitar|8f2ab548e76678bcdcdaf6cd780db7b0e7ad041fb87b2c4593cfd7ea589a4f24|1703611|https://raw.githubusercontent.com/freepats/electric-guitar-FSBS-dist1/bbae17f0ad16f5edd7ec22178d181f3e3f6696fa/samples/bridge/G4_s6_04.flac|samples/bridge/G4_s6_04.flac
-set|nylon-guitar|FreePats|acoustic-guitars|CC0 1.0|FreePats project (Spanish classical guitar)|https://github.com/freepats/spanish-classical-guitar|51|5298000|
+set|nylon-guitar|FreePats|nylon-guitars|CC0 1.0|FreePats project (Spanish classical guitar)|https://github.com/freepats/spanish-classical-guitar|51|5298000|
 file|nylon-guitar|a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499|7048|https://raw.githubusercontent.com/freepats/spanish-classical-guitar/6f4eb1b092acc88f5448cea1a0001bd07b971af8/LICENSE|LICENSE
 file|nylon-guitar|7edec559c98c0658e9ad9e38156ef16346f81049fab96c6166fbb872f3f7d92e|2450|https://raw.githubusercontent.com/freepats/spanish-classical-guitar/6f4eb1b092acc88f5448cea1a0001bd07b971af8/SpanishClassicalGuitar-20190618.sfz|Nylon Guitar.sfz
 file|nylon-guitar|441fd174c3cf718bdd6e00f9bc8e19ee16b69aebb551450bd8bdef378b746e94|660|https://raw.githubusercontent.com/freepats/spanish-classical-guitar/6f4eb1b092acc88f5448cea1a0001bd07b971af8/README.md|README.md
@@ -426,7 +426,7 @@ file|nylon-guitar|71e69e5eff738f668b4e3e2f53f72de7725fd3b7969339bb44aba8e7c1df78
 file|nylon-guitar|d4f3277f48067a3b7e1818b34d08eeec66d727101c744554632397aeb7dd844d|109718|https://raw.githubusercontent.com/freepats/spanish-classical-guitar/6f4eb1b092acc88f5448cea1a0001bd07b971af8/samples/G3.flac|samples/G3.flac
 file|nylon-guitar|5e3423ab0440fe8cc337ada529c2bb1696914e4465b336d3635630b4ea7b4916|71824|https://raw.githubusercontent.com/freepats/spanish-classical-guitar/6f4eb1b092acc88f5448cea1a0001bd07b971af8/samples/G4.flac|samples/G4.flac
 file|nylon-guitar|0d887f7f14d526e5af1a1aa7060af92c49e3dc57f1e534c215ce93b8e3f31cc8|49878|https://raw.githubusercontent.com/freepats/spanish-classical-guitar/6f4eb1b092acc88f5448cea1a0001bd07b971af8/samples/G5.flac|samples/G5.flac
-set|ukulele|FreePats|acoustic-guitars|CC0 1.0|Mateusz Dąbrowski, for FreePats (Ukulele)|https://github.com/freepats/ukulele1|18|2525769|
+set|ukulele|FreePats|nylon-guitars|CC0 1.0|Mateusz Dąbrowski, for FreePats (Ukulele)|https://github.com/freepats/ukulele1|18|2525769|
 file|ukulele|a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499|7048|https://raw.githubusercontent.com/freepats/ukulele1/86d345f6f7b79a106ace98eca0da19b087786dba/LICENSE.txt|LICENSE.txt
 file|ukulele|5f3286dee9c8d0dc2dd943298f5f85b0a1feff5d37dc7192b992724509ece2d4|2501|https://raw.githubusercontent.com/freepats/ukulele1/86d345f6f7b79a106ace98eca0da19b087786dba/README.txt|README.txt
 file|ukulele|03c1758879cf937cf7d1dac86d560d16ec47e7fb1c82c4601a6f6476ee420f72|1271|https://raw.githubusercontent.com/freepats/ukulele1/86d345f6f7b79a106ace98eca0da19b087786dba/Ukulele%2020260811.sfz|Ukulele.sfz
@@ -1551,7 +1551,7 @@ file|drums|72d9272ae2ae859e82ae4176fa10014955f980861434a5f7f61936c57c9a3318|4999
 file|drums|1d5fd2162d964abf0e92477ade3b0c7eaaf53b4eb9106baae264aaa3bafc7d53|504238|https://raw.githubusercontent.com/freepats/muldjordkit/719fe72bc6693b94f1229674e202881145ab44ed/samples/Tom4/4-Tom4.flac|samples/Tom4/4-Tom4.flac
 file|drums|38918b5a337928f4639e59434edf520af1d6f9997ff6e2bfca77151e65977355|457018|https://raw.githubusercontent.com/freepats/muldjordkit/719fe72bc6693b94f1229674e202881145ab44ed/samples/Tom4/6-Tom4.flac|samples/Tom4/6-Tom4.flac
 file|drums|e667f60c115a4abdf01dcd20d9da61fca829614bd7cb4635fff84e68f55097bd|459353|https://raw.githubusercontent.com/freepats/muldjordkit/719fe72bc6693b94f1229674e202881145ab44ed/samples/Tom4/8-Tom4.flac|samples/Tom4/8-Tom4.flac
-set|steel-guitar|FreePats|acoustic-guitars|GPL-3.0-or-later with exception|FreePats (FSS Steel String Guitar)|https://freepats.zenvoid.org/Guitar/FSS-SteelStringGuitar/FSS-SteelStringGuitar-SFZ-20200521.tar.xz|61|13130512|
+set|steel-guitar|FreePats|steel-guitars|GPL-3.0-or-later with exception|FreePats (FSS Steel String Guitar)|https://freepats.zenvoid.org/Guitar/FSS-SteelStringGuitar/FSS-SteelStringGuitar-SFZ-20200521.tar.xz|61|13130512|
 archive|steel-guitar|720b55c5ad4dcfb9f788ab13a0bda834cbfd7b3214df2ca90648c58951e41777|13130512|https://freepats.zenvoid.org/Guitar/FSS-SteelStringGuitar/FSS-SteelStringGuitar-SFZ-20200521.tar.xz
 file|steel-guitar|7741fcc4b267f8e76c162273b27675aecf26d6cdad662977b7daf4ac3b63dcdc|3135|archive:FSS-SteelStringGuitar-SFZ-20200521/FSS-SteelStringGuitar-20200521.sfz|Steel String Guitar.sfz
 file|steel-guitar|c89ddce8b0c8f1f685c2ece7f0878eabb7d0c8e4e375fac7a637f398befa62b5|2729|archive:FSS-SteelStringGuitar-SFZ-20200521/readme.txt|readme.txt

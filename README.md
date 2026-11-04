@@ -85,9 +85,7 @@ name, licence and credit, and the row it is made for). OxiGuitar uses
 each set for its row by itself, from the next time it plays: the clean guitar
 set for clean guitars, the bass for basses, and so on. To use another set for
 a row, pick it in Tools, Plugins, MIDI (SoundFont, SFZ), Settings, which
-always wins over the automatic one. (The three acoustic sets share one row,
-Acoustic guitars: the largest plays unless you pick; a track's Sound section
-picks another for just that track.)
+always wins over the automatic one. (The nylon-string guitar and the ukulele share the Nylon-string guitars row, where the larger, the guitar, plays unless you pick the ukulele there; the steel-string guitar has the Steel-string guitars row. A track's Sound section picks another set for just that track.)
 
 ### Update, remove
 
