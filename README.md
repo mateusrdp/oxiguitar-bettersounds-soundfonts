@@ -28,7 +28,18 @@ are fetched from the places listed in `sets.txt`.
 
 ## Install
 
-You need `bash` and `curl` (Linux, macOS) or PowerShell (Windows). Download
+**With the .deb or .rpm** (apt, dnf), installing the package installs the
+sets, for every user: about 1.2 GB, downloaded from their authors and checked
+against the checksums in `sets.txt`. On Debian and Ubuntu the package asks
+first (the default answer is yes, so an unattended install downloads them);
+answering no, or `echo 'oxiguitar-bettersounds-soundfonts oxiguitar-bettersounds-soundfonts/download boolean false' | sudo debconf-set-selections`
+before installing, downloads nothing. With dnf, `OXIGUITAR_SKIP_SOUNDS=1`
+in the environment of the install skips it. Removing the package removes the
+sets it installed. A failed download does not fail the installation:
+`sudo oxiguitar-install-sounds --system` tries again.
+
+**By hand** (any system, and the only way on Windows and macOS): you need
+`bash` and `curl` (Linux, macOS) or PowerShell (Windows). Download
 this repository (green Code button, Download ZIP, or the zip of a release),
 unpack it and run the installer from the unpacked folder.
 
@@ -70,10 +81,13 @@ it. `--dir DIR` (`-Dir DIR`) picks any other folder.
 
 Each set gets its own folder holding the instrument, its samples, its
 licence and an `oxiguitar-set.json` that tells OxiGuitar what it is (its
-name, licence and credit, and the row it is made for). Then pick each set
-in OxiGuitar: Tools, Plugins, MIDI (SoundFont, SFZ), Settings, one row per
-kind of track (Clean Guitar for Clean guitars, and so on). OxiGuitar
-doesn't pick them by itself.
+name, licence and credit, and the row it is made for). OxiGuitar uses
+each set for its row by itself, from the next time it plays: the clean guitar
+set for clean guitars, the bass for basses, and so on. To use another set for
+a row, pick it in Tools, Plugins, MIDI (SoundFont, SFZ), Settings, which
+always wins over the automatic one. (The three acoustic sets share one row,
+Acoustic guitars: the largest plays unless you pick; a track's Sound section
+picks another for just that track.)
 
 ### Update, remove
 

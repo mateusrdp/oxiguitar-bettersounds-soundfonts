@@ -42,9 +42,29 @@ $description
 cp -a %{_sourcedir}/root/. %{buildroot}/
 
 %post
-echo "OxiGuitar sound sets are not installed yet."
-echo "Run 'oxiguitar-install-sounds' to choose and download them for your account,"
-echo "or 'sudo oxiguitar-install-sounds --system' for every user."
+# Installing this package is asking for the sets: they are downloaded for
+# every user now. OXIGUITAR_SKIP_SOUNDS=1 in the environment of the install
+# skips that. A failed download is not a failed installation.
+if [ -n "\${OXIGUITAR_SKIP_SOUNDS:-}" ]; then
+    echo "OxiGuitar sound sets not downloaded; run 'sudo oxiguitar-install-sounds --system' to get them."
+elif ! $share/install.sh --yes --system; then
+    echo "OxiGuitar sound sets could not be downloaded." >&2
+    echo "Run 'sudo oxiguitar-install-sounds --system' to try again." >&2
+fi
+exit 0
+
+%preun
+# Removing the package (not upgrading it) removes the sets it installed:
+# only the folders the installer made (they hold oxiguitar-set.json).
+if [ "\$1" = 0 ]; then
+    dir=/usr/share/oxiguitar/soundfonts
+    for id in \$(awk -F'|' '\$1 == "set" { print \$2 }' $share/sets.txt); do
+        if [ -f "\$dir/\$id/oxiguitar-set.json" ]; then rm -rf "\${dir:?}/\$id"; fi
+    done
+    rm -f "\$dir/CREDITS.txt"
+    rmdir "\$dir" 2>/dev/null || true
+fi
+exit 0
 
 %files
 $share/install.sh
