@@ -129,7 +129,50 @@ foreach ($id in $chosen) {
 "`nTotal download: $(Mb $total) at most (files already here are not fetched again)."
 if (-not (Confirm-Yes "Download and install?")) { "Nothing downloaded."; return }
 
-function Sha256($path) { (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() }
+# In this process, not through a cmdlet: thousands of small files add up.
+function Sha256($path) {
+    $sha = [Security.Cryptography.SHA256]::Create()
+    $stream = [IO.File]::OpenRead($path)
+    try { [BitConverter]::ToString($sha.ComputeHash($stream)).Replace("-", "").ToLowerInvariant() }
+    finally { $stream.Dispose(); $sha.Dispose() }
+}
+
+# Fetch many files, several at a time ($env:OXIGUITAR_JOBS, 8), each worker
+# with a connection of its own that it reuses. $items have Url and Target;
+# returns the targets that could not be fetched.
+function Get-Files($items, $showFrom, $showTotal) {
+    $jobs = 8
+    if ($env:OXIGUITAR_JOBS -match '^[1-9][0-9]*$') { $jobs = [int]$env:OXIGUITAR_JOBS }
+    $jobs = [Math]::Min($jobs, $items.Count)
+    $pool = [runspacefactory]::CreateRunspacePool(1, $jobs)
+    $pool.Open()
+    $work = {
+        param($mine, $counter)
+        $client = New-Object Net.WebClient
+        foreach ($i in $mine) {
+            try { $client.DownloadFile($i.Url, $i.Target) } catch { $i.Target }
+            [void][Threading.Interlocked]::Increment([ref]$counter[0])
+        }
+    }
+    $counter = New-Object int[] 1
+    $running = @()
+    for ($w = 0; $w -lt $jobs; $w++) {
+        $mine = @(for ($k = $w; $k -lt $items.Count; $k += $jobs) { $items[$k] })
+        $ps = [powershell]::Create()
+        $ps.RunspacePool = $pool
+        [void]$ps.AddScript($work).AddArgument($mine).AddArgument($counter)
+        $running += [pscustomobject]@{ Ps = $ps; Handle = $ps.BeginInvoke() }
+    }
+    while (@($running | Where-Object { -not $_.Handle.IsCompleted }).Count -gt 0) {
+        Write-Host -NoNewline ("`r  {0}/{1}" -f ($showFrom + $counter[0]), $showTotal)
+        Start-Sleep -Milliseconds 500
+    }
+    $failed = @()
+    foreach ($r in $running) { $failed += @($r.Ps.EndInvoke($r.Handle)); $r.Ps.Dispose() }
+    $pool.Close()
+    Write-Host ("`r  {0}/{1}" -f ($showFrom + $items.Count), $showTotal)
+    return $failed
+}
 function Json($s) { $s.Replace("\", "\\").Replace('"', '\"') }
 $utf8 = New-Object Text.UTF8Encoding($false)
 
@@ -144,25 +187,33 @@ try {
         # is its own: what an older version of the set left there is removed
         # below, once the new files are in.
         $owned = Test-Path -LiteralPath (Join-Path $setDir "oxiguitar-set.json")
-        $n = 0
-        $count = $s.Count
-        if ($withExtra[$id]) { $count += $extras[$id].Count }
         $pending = New-Object System.Collections.ArrayList
+        $todo = New-Object System.Collections.ArrayList
+        $dirs = @{}
+        $total = 0
         foreach ($f in $files[$id]) {
             if ($f.Extra -and -not $withExtra[$id]) { continue }
-            $n++
+            $total++
             $target = Join-Path $setDir ($f.Path -replace "/", [IO.Path]::DirectorySeparatorChar)
-            New-Item -ItemType Directory -Force -Path (Split-Path $target) | Out-Null
+            $dirs[(Split-Path $target)] = $true
             if ((Test-Path -LiteralPath $target) -and (Sha256 $target) -eq $f.Sum) { continue }
             if ($f.Url.StartsWith("archive:")) { [void]$pending.Add([pscustomobject]@{ Inner = $f.Url.Substring(8); Sum = $f.Sum; Target = $target; Path = $f.Path }); continue }
-            Write-Host -NoNewline ("`r  {0}/{1}" -f $n, $count)
-            $part = "$target.part"
-            $wc.DownloadFile($f.Url, $part)
-            if ((Sha256 $part) -ne $f.Sum) {
-                Remove-Item -LiteralPath $part -Force
-                throw "$($f.Path) does not match the checksum in sets.txt; it was thrown away. Nothing from it is installed."
+            [void]$todo.Add([pscustomobject]@{ Url = $f.Url; Target = $target; Sum = $f.Sum; Path = $f.Path })
+        }
+        foreach ($d in $dirs.Keys) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
+        if ($todo.Count -gt 0) {
+            $failed = @(Get-Files $todo.ToArray() ($total - $todo.Count - $pending.Count) $total)
+            # Checked as a whole; what is not right is thrown away, and the
+            # first of those stops everything.
+            $bad = @()
+            foreach ($t in $todo) {
+                if (-not (Test-Path -LiteralPath $t.Target) -or (Sha256 $t.Target) -ne $t.Sum) { $bad += $t }
             }
-            Move-Item -LiteralPath $part -Destination $target -Force
+            if ($bad.Count -gt 0) {
+                foreach ($t in $bad) { Remove-Item -LiteralPath $t.Target -Force -ErrorAction SilentlyContinue }
+                if ($failed.Count -gt 0) { throw "could not download $($bad[0].Path) (and maybe others); what came is kept, run it again" }
+                throw "$($bad[0].Path) does not match the checksum in sets.txt; it was thrown away. Nothing from it is installed."
+            }
         }
         # A set that is one archive: fetched once, and only the files listed for
         # it are taken out of it, each checked on its own.
