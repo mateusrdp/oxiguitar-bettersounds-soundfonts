@@ -4,6 +4,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+
+- **The installed sets could be read by root only**, so OxiGuitar listed none of the new drums (and any set installed or updated by 0.2.0 or 0.2.1 whose folders were new). `curl --create-dirs` makes folders for its own user alone (mode 750), and the `.deb` installs as root. The installer now makes the folders itself, and finishes each set with `chmod -R a+rX`, which also repairs folders an earlier version left closed: install again (`apt upgrade` does) and they open. A test runs the installer under `umask 077`.
+
 ## [0.2.1] - 2026-11-04
 
 ### Fixed

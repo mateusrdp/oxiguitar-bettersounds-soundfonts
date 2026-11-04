@@ -225,6 +225,7 @@ download_files() {
     count="$(wc -l < "$list" | tr -d ' ')"
     case "$jobs" in ''|*[!0-9]*|0) jobs=8 ;; esac
     [ "$jobs" -le "$count" ] || jobs="$count"
+    awk -F'|' -v d="$base" '{ r = $6; sub(/[^\/]*$/, "", r); print d "/" r }' "$list" | sort -u | while IFS= read -r folder; do mkdir -p "$folder"; done
     before="$(find "$base" -type f ! -name '.oxiguitar-*' | wc -l | tr -d ' ')"
     # curl on Windows is not a Git Bash program: it converts the paths it is
     # given as arguments but not those it reads from a config file.
@@ -375,6 +376,10 @@ for id in $chosen; do
         fi
         printf '\n}\n'
     } > "$set_dir/oxiguitar-set.json"
+    # Everyone who plays must be able to read the set: curl makes the folders
+    # it creates readable by its user alone (mode 750), and an installer run
+    # by root with a strict umask makes files the same way.
+    chmod -R a+rX "$set_dir"
 done
 
 # CREDITS.txt lists every set installed here, whatever its licence.
