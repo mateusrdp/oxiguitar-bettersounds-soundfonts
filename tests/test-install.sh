@@ -103,6 +103,18 @@ sed -E 's#^(file\|first\|[^|]*\|[^|]*\|)[^|]*#\1file:///nonexistent/gone#' "$wor
 PATH="$work/shim:$PATH" OXIGUITAR_SETS_FILE="$work/dead.txt" "$root/install.sh" --yes --sets first --dir "$out" > "$work/log" 2>&1 || { cat "$work/log"; fail "installed files were not recognised with dead addresses"; }
 if grep -q "could not" "$work/log"; then fail "tried to fetch what was already here"; fi
 
+# Whatever the umask of the installer, what it makes can be read by everyone.
+rm -rf "$out/first"
+( umask 077; "$root/install.sh" --yes --sets first --dir "$out" > /dev/null ) || fail "install under umask 077 failed"
+if ! command -v cygpath > /dev/null 2>&1; then   # Windows has no such modes
+    for p in "$out/first" "$out/first/samples"; do
+        [ -n "$(find "$p" -maxdepth 0 -perm -005)" ] || fail "$p cannot be entered by everyone"
+    done
+    for p in "$out/first/samples/a.flac" "$out/first/First Guitar.sfz" "$out/first/oxiguitar-set.json"; do
+        [ -n "$(find "$p" -maxdepth 0 -perm -004)" ] || fail "$p cannot be read by everyone"
+    done
+fi
+
 # One download at a time works the same.
 rm -rf "$out/first"; OXIGUITAR_JOBS=1 "$root/install.sh" --yes --sets first --dir "$out" > /dev/null || fail "one job failed"
 [ -e "$out/first/samples/a.flac" ] || fail "one job did not install"
