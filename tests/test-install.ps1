@@ -10,7 +10,7 @@ $src = Join-Path $work "src"
 New-Item -ItemType Directory -Force -Path (Join-Path $src "samples") | Out-Null
 function Fail($m) { throw "FAILED: $m" }
 function Put($rel, $text) { [IO.File]::WriteAllText((Join-Path $src $rel), $text) }
-Put "one.sfz" "sfz one"; Put "samples/a.flac" "sample a"; Put "LICENSE" "licence text"; Put "two.sfz" "sfz two"
+Put "one.sfz" "sfz one"; Put "samples/a.flac" "sample a"; Put "LICENSE" "licence text"; Put "two.sfz" "sfz two"; Put "alt.sfz" "sfz alt"
 function Sum($rel) { (Get-FileHash -LiteralPath (Join-Path $src $rel) -Algorithm SHA256).Hash.ToLowerInvariant() }
 function Len($rel) { (Get-Item -LiteralPath (Join-Path $src $rel)).Length }
 function Url($rel) { ([uri](Join-Path $src $rel)).AbsoluteUri }
@@ -28,6 +28,10 @@ function ASum($p) { (Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowe
 function ALen($p) { (Get-Item -LiteralPath $p).Length }
 $lines = @(
     "set|first|FreePats|clean-guitars|CC0 1.0|Somebody `"Q`" (First)|https://example.org/first|3|0|",
+    "extra|first|1|$(Len 'alt.sfz')",
+    "patch|first|First Guitar.sfz|clean|1",
+    "patch|first|Alt.sfz|clean small|0",
+    "file|first|$(Sum 'alt.sfz')|$(Len 'alt.sfz')|$(Url 'alt.sfz')|Alt.sfz|extra",
     "file|first|$(Sum 'one.sfz')|$(Len 'one.sfz')|$(Url 'one.sfz')|First Guitar.sfz",
     "file|first|$(Sum 'samples/a.flac')|$(Len 'samples/a.flac')|$(Url 'samples/a.flac')|samples/a.flac",
     "file|first|$(Sum 'LICENSE')|$(Len 'LICENSE')|$(Url 'LICENSE')|LICENSE",
@@ -56,6 +60,16 @@ try {
     if ([IO.File]::ReadAllText((Join-Path $out "third/samples/b.wav")) -ne "sample b") { Fail "archive sample missing" }
     if (Test-Path -LiteralPath (Join-Path $out "third/Other.sfz")) { Fail "a file that is not listed was kept" }
     if (Test-Path -LiteralPath (Join-Path $out ".oxiguitar-archive")) { Fail "the archive was left behind" }
+    if (Test-Path -LiteralPath (Join-Path $out "first/Alt.sfz")) { Fail "an extra patch was installed without being asked for" }
+    if ($json.Contains('"patches"')) { Fail "patches listed without being installed" }
+    & "$root/install.ps1" -Yes -Patches all -Sets first -Dir $out | Out-Null
+    if ([IO.File]::ReadAllText((Join-Path $out "first/Alt.sfz")) -ne "sfz alt") { Fail "the extra patch is missing" }
+    $json = [IO.File]::ReadAllText((Join-Path $out "first/oxiguitar-set.json"))
+    if (-not $json.Contains('"recommended": "First Guitar.sfz"')) { Fail "recommended patch not named" }
+    if (-not $json.Contains('"Alt.sfz": "clean small"')) { Fail "patch not named" }
+    $bad = $false
+    try { & "$root/install.ps1" -Yes -Patches some -Sets first -Dir $out | Out-Null } catch { $bad = $true }
+    if (-not $bad) { Fail "an invalid -Patches value was accepted" }
     & "$root/install.ps1" -Yes -Sets first -Dir $out | Out-Null   # again: nothing changes
     Put "two.sfz" "tampered"
     Remove-Item -Recurse -Force (Join-Path $out "second")
