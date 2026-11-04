@@ -3,7 +3,7 @@
 oxiguitar-install-sounds \- download OxiGuitar's recommended sound sets
 .SH SYNOPSIS
 .B oxiguitar-install-sounds
-[\fB\-\-list\fR] [\fB\-\-sets\fR \fINAMES\fR] [\fB\-\-dir\fR \fIDIR\fR] [\fB\-\-system\fR] [\fB\-\-yes\fR] [\fB\-\-uninstall\fR]
+[\fB\-\-list\fR] [\fB\-\-sets\fR \fINAMES\fR] [\fB\-\-dir\fR \fIDIR\fR] [\fB\-\-system\fR] [\fB\-\-patches\fR \fIall\fR|\fIrecommended\fR] [\fB\-\-yes\fR] [\fB\-\-uninstall\fR]
 .SH DESCRIPTION
 Shows each sound set with its size, licence, author and download hosts,
 asks for confirmation, then downloads the files, checks each against a
@@ -23,6 +23,12 @@ Install into DIR instead of your OxiGuitar soundfonts folder.
 .TP
 .B \-\-system
 Install for every user, into /usr/share/oxiguitar/soundfonts (as root).
+.TP
+.BI \-\-patches " all|recommended"
+For a set with several patches (instruments), install every one or only the
+recommended one. Without it the installer asks for each such set, and
+.B \-\-yes
+alone means recommended.
 .TP
 .B \-\-yes
 Do not ask for confirmation; installs all sets unless \-\-sets is given.

@@ -49,7 +49,8 @@ Linux and macOS:
 ./install.sh --list          # what is on offer
 ./install.sh                 # asks which sets, then asks before downloading
 ./install.sh --sets bass,drums
-./install.sh --yes           # every set, no questions
+./install.sh --yes           # every set, only the recommended patch of each
+./install.sh --yes --patches all   # every set, every patch
 ```
 
 Windows (PowerShell):
@@ -59,6 +60,7 @@ Windows (PowerShell):
 .\install.ps1
 .\install.ps1 -Sets bass,drums
 .\install.ps1 -Yes
+.\install.ps1 -Yes -Patches all
 ```
 
 If Windows refuses to run the script, run it with
@@ -66,6 +68,19 @@ If Windows refuses to run the script, run it with
 
 Before anything is downloaded the installer shows, for each set, its size,
 licence, author and the hosts the files come from, and waits for a yes.
+
+### One patch or all of them
+
+Some sets hold several instruments (patches): the clean guitar has 2 and the
+bass 11 (about 650 MB more). By default you get the recommended one of each,
+which is the one OxiGuitar plays. For a set with others the installer asks
+`Install them all, or only the recommended one? [a/R]`; `--patches all`
+(`-Patches all`) answers yes for every set and `--patches recommended` no,
+and `--yes` alone means recommended. With all of them installed the MIDI
+plugin lists each by a short name, such as `FreePats: Electric Guitar FSBS
+(clean bridge small)`, so you can pick any for a track, and still plays the
+recommended one when you pick nothing. Run the installer again to change your
+mind.
 
 ### Where the sets go
 

@@ -15,7 +15,7 @@ import pathlib, re, sys
 errors = []
 want = [l.split("|")[0] for l in pathlib.Path("sets.in").read_text(encoding="utf-8").splitlines()
         if l.strip() and not l.startswith("#")]
-sets, files, archives = {}, {}, {}
+sets, files, archives, extras, patches = {}, {}, {}, {}, {}
 for l in pathlib.Path("sets.txt").read_text(encoding="utf-8").splitlines():
     if not l or l.startswith("#"):
         continue
@@ -25,20 +25,42 @@ for l in pathlib.Path("sets.txt").read_text(encoding="utf-8").splitlines():
         files[f[1]] = []
     elif f[0] == "archive" and len(f) == 5:
         archives[f[1]] = f
-    elif f[0] == "file" and len(f) == 6:
+    elif f[0] == "file" and len(f) in (6, 7) and (len(f) == 6 or f[6] == "extra"):
         files.setdefault(f[1], []).append(f)
+    elif f[0] == "extra" and len(f) == 4:
+        extras[f[1]] = f
+    elif f[0] == "patch" and len(f) == 5 and f[4] in ("0", "1"):
+        patches.setdefault(f[1], []).append(f)
     else:
         errors.append(f"unreadable line: {l[:80]}")
 if want != list(sets):
     errors.append(f"sets.in has {want}, sets.txt has {list(sets)}; run scripts/pin.sh")
 for sid, s in sets.items():
-    fs = files[sid]
+    allfs = files[sid]
+    fs = [f for f in allfs if len(f) == 6]       # what the recommended patch needs
+    more = [f for f in allfs if len(f) == 7]     # only the other patches need these
     arc = archives.get(sid)
     # The download is the archive, for a set that is one; else the files.
     if int(s[7]) != len(fs) or int(s[8]) != (int(arc[3]) if arc else sum(int(f[3]) for f in fs)):
         errors.append(f"{sid}: the totals do not match the files")
     if arc and (not re.fullmatch(r"[0-9a-f]{64}", arc[2]) or not arc[4].startswith("https://")):
         errors.append(f"{sid}: bad archive line")
+    # The other patches: counted apart, and each patch is a file that is there.
+    ex = extras.get(sid)
+    if bool(more) != bool(ex) or (ex and (int(ex[2]) != len(more) or int(ex[3]) != sum(int(f[3]) for f in more))):
+        errors.append(f"{sid}: the extra totals do not match the files")
+    ps = patches.get(sid, [])
+    if bool(ps) != bool(ex):
+        errors.append(f"{sid}: patches and extras disagree")
+    if ps:
+        have = {f[5] for f in allfs}
+        if sum(p[4] == "1" for p in ps) != 1:
+            errors.append(f"{sid}: expected exactly one recommended patch")
+        for p in ps:
+            if p[2] not in have or not p[2].lower().endswith(".sfz"):
+                errors.append(f"{sid}: patch {p[2]} is not a listed .sfz")
+        if len({p[2] for p in ps}) != len(ps) or len({p[3] for p in ps}) != len(ps):
+            errors.append(f"{sid}: a patch path or name is repeated")
     # One instrument: exactly one .sfz in the shallowest folder that has any
     # (the files it #includes live in folders below it).
     sfz = [f[5] for f in fs if f[5].lower().endswith(".sfz")]
@@ -49,9 +71,9 @@ for sid, s in sets.items():
     # An archive may carry its licence in its readme.
     if not any(re.match(r"(LICENSE|LICENCE|COPYING)" + ("|README|readme" if arc else ""), f[5], re.I) for f in fs):
         errors.append(f"{sid}: no licence file")
-    if len({f[5] for f in fs}) != len(fs):
+    if len({f[5] for f in allfs}) != len(allfs):
         errors.append(f"{sid}: a path is listed twice")
-    for f in fs:
+    for f in allfs:
         if not re.fullmatch(r"[0-9a-f]{64}", f[2]):
             errors.append(f"{sid}: bad checksum for {f[5]}")
         if not (f[4].startswith("archive:") if arc else re.match(r"https://raw\.githubusercontent\.com/[^/]+/[^/]+/[0-9a-f]{40}/", f[4])):
