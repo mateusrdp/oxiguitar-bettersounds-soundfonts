@@ -4,6 +4,8 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-11-04
+
 ### Added
 
 - **Black and Green Guitars** (Karoryfer Samples, CC0): `black-and-green-guitars` for the clean guitars row, with the green guitar's hammer-on program (`06-green_hammer-on`) as the one that plays by itself; the other ten programs (keyswitched, twang, staccato, the black Hofner and the combination) come with "all patches". The FreePats clean guitar stays installed, to pick, with the role `none` (it is not played by itself, so the choice for the row is not left to chance).
