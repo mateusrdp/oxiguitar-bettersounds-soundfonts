@@ -4,6 +4,8 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-04
+
 ### Added
 
 - Install every patch of a set, not only the recommended one: `install.sh --patches all|recommended`, `install.ps1 -Patches all|recommended`, and a question for each set that has others (the clean guitar has 2 patches, the bass 11). `oxiguitar-set.json` then names the `recommended` patch and gives every patch's short `patches` name, which the MIDI plugin shows. `sets.txt` gains `extra` and `patch` lines and a seventh `extra` field on file lines.
