@@ -14,6 +14,12 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 - The installers' download is about 1.5 GB in all.
 - `scripts/pin.sh` reads an instrument as a player does: `#include` files are placed where they stand, `#define $name value` replaces `$name` after it, and several includes may share a line (the DrumGizmo kit needs all three). `none` is a role of `sets.in` for a set that is only to be picked.
 
+## [0.1.4] - 2026-11-04
+
+### Fixed
+
+- **The `.deb` and `.rpm` never asked which patches to install** (only the installer run by hand did, so a package install always got the recommended ones). The `.deb` now asks, at priority high after the question about downloading, "recommended" or "all" (`dpkg-reconfigure oxiguitar-bettersounds-soundfonts` asks again, and purging then reinstalling does too); the `.rpm` installs every patch when `OXIGUITAR_PATCHES=all` is in the environment of the install.
+
 ## [0.1.3] - 2026-11-04
 
 ### Added

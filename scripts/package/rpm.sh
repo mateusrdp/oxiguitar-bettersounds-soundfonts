@@ -44,10 +44,11 @@ cp -a %{_sourcedir}/root/. %{buildroot}/
 %post
 # Installing this package is asking for the sets: they are downloaded for
 # every user now. OXIGUITAR_SKIP_SOUNDS=1 in the environment of the install
-# skips that. A failed download is not a failed installation.
+# skips that; OXIGUITAR_PATCHES=all installs every patch of each set, not only
+# the recommended one. A failed download is not a failed installation.
 if [ -n "\${OXIGUITAR_SKIP_SOUNDS:-}" ]; then
     echo "OxiGuitar sound sets not downloaded; run 'sudo oxiguitar-install-sounds --system' to get them."
-elif ! $share/install.sh --yes --system; then
+elif ! $share/install.sh --yes --system --patches "\${OXIGUITAR_PATCHES:-recommended}"; then
     echo "OxiGuitar sound sets could not be downloaded." >&2
     echo "Run 'sudo oxiguitar-install-sounds --system' to try again." >&2
 fi
