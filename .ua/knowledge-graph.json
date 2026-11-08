@@ -1,0 +1,965 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "oxiguitar-bettersounds-soundfonts",
+    "description": "Recommended free sound sets for OxiGuitar, with installers for Linux/macOS/Windows and package builds for .deb and .rpm",
+    "languages": ["shell", "powershell", "yaml", "markdown", "toml", "txt", "1"],
+    "frameworks": [],
+    "analyzedAt": "2026-11-08T00:00:00Z",
+    "gitCommitHash": "9cfc3a884c8d9e689eaa573c193a9656cb44e0e5"
+  },
+  "nodes": [
+    {
+      "id": "pipeline:.github/workflows/ci.yml",
+      "type": "pipeline",
+      "name": "ci.yml",
+      "filePath": ".github/workflows/ci.yml",
+      "summary": "GitHub Actions CI workflow running Rust formatting, linting, testing on multiple platforms, license checks, installer tests, and DCO sign-off validation on every PR and push to develop or main.",
+      "tags": ["ci-cd", "testing", "linting", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "pipeline:.github/workflows/pin.yml",
+      "type": "pipeline",
+      "name": "pin.yml",
+      "filePath": ".github/workflows/pin.yml",
+      "summary": "GitHub Actions workflow that runs scripts/pin.sh to regenerate sets.txt from sets.in and fails if the generated file differs from the committed version.",
+      "tags": ["ci-cd", "pinning", "checksums", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:.github/workflows/publish.yml",
+      "type": "pipeline",
+      "name": "publish.yml",
+      "filePath": ".github/workflows/publish.yml",
+      "summary": "GitHub Actions workflow triggered when a release is published; validates all release assets and notifies the package repository system via GitHub API dispatch.",
+      "tags": ["ci-cd", "deployment", "release", "publishing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:.github/workflows/release.yml",
+      "type": "pipeline",
+      "name": "release.yml",
+      "filePath": ".github/workflows/release.yml",
+      "summary": "GitHub Actions workflow that builds .deb and .rpm packages, zip archives, and SHA256SUMS; tests them by installing and purging; creates a draft release on tagged commits.",
+      "tags": ["ci-cd", "packaging", "release", "testing"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:CHANGELOG.md",
+      "type": "document",
+      "name": "CHANGELOG.md",
+      "filePath": "CHANGELOG.md",
+      "summary": "Unreleased changelog tracking all version changes for the sound sets installer and package metadata.",
+      "tags": ["documentation", "changelog", "versioning"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "summary": "Claude Code standing rules for working on this repository, covering branch strategy, DCO sign-off, and project-specific conventions.",
+      "tags": ["documentation", "conventions", "ai-assistant"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Contribution guidelines covering branch strategy (develop/main), pull request process, and Developer Certificate of Origin (DCO) sign-off requirements.",
+      "tags": ["documentation", "contribution", "dco"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview documenting the recommended sound sets for OxiGuitar, installation instructions for Linux/macOS/Windows, set descriptions, licensing, and maintainer notes.",
+      "tags": ["documentation", "entry-point", "overview"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:clippy.toml",
+      "type": "config",
+      "name": "clippy.toml",
+      "filePath": "clippy.toml",
+      "summary": "Rust Clippy linter configuration for the OxiGuitar project's Rust components.",
+      "tags": ["configuration", "rust", "linting"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:deny.toml",
+      "type": "config",
+      "name": "deny.toml",
+      "filePath": "deny.toml",
+      "summary": "Rust cargo-deny configuration enforcing license compliance, advisory checks, ban rules, and source restrictions for Rust dependencies.",
+      "tags": ["configuration", "rust", "license-check", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:install.sh",
+      "type": "file",
+      "name": "install.sh",
+      "filePath": "install.sh",
+      "summary": "Main Bash installer for OxiGuitar sound sets; parses sets.txt, downloads files with SHA-256 verification, creates oxiguitar-set.json metadata, and supports listing, installing, uninstalling, and patch selection.",
+      "tags": ["installer", "shell-script", "download", "verification"],
+      "complexity": "complex",
+      "languageNotes": "Supports parallel downloads via OXIGUITAR_JOBS, handles archive extraction, and uses curl or wget with retry logic."
+    },
+    {
+      "id": "file:install.ps1",
+      "type": "file",
+      "name": "install.ps1",
+      "filePath": "install.ps1",
+      "summary": "Windows PowerShell installer equivalent of install.sh; uses PowerShell runspace pools for parallel downloads and .NET SHA-256 hashing for file verification.",
+      "tags": ["installer", "powershell", "download", "verification"],
+      "complexity": "complex",
+      "languageNotes": "Uses runspace pools for parallel downloads and handles Windows path conversion via cygpath."
+    },
+    {
+      "id": "config:rustfmt.toml",
+      "type": "config",
+      "name": "rustfmt.toml",
+      "filePath": "rustfmt.toml",
+      "summary": "Rust formatter configuration for consistent code style across the project.",
+      "tags": ["configuration", "rust", "formatting"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:sets.txt",
+      "type": "document",
+      "name": "sets.txt",
+      "filePath": "sets.txt",
+      "summary": "Generated manifest listing every sound set file with its SHA-256 checksum, size, and download URL; pinned to source repository commits for integrity verification.",
+      "tags": ["manifest", "checksums", "pinned", "generated"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/check-dco.sh",
+      "type": "file",
+      "name": "check-dco.sh",
+      "filePath": "scripts/check-dco.sh",
+      "summary": "Validates that every commit in a range carries a DCO sign-off (Signed-off-by matching the author email), with skip rules for bot commits (Claude app, Dependabot) whose human review serves as the sign-off.",
+      "tags": ["validation", "dco", "ci", "contribution"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/check-sets.sh",
+      "type": "file",
+      "name": "check-sets.sh",
+      "filePath": "scripts/check-sets.sh",
+      "summary": "Validates sets.txt consistency against sets.in: set counts, file counts, sizes, pinned URLs, SHA-256 checksums, licence files, unique paths, no path traversal, and exactly one recommended .sfz instrument per set.",
+      "tags": ["validation", "manifest", "integrity", "data-quality"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/pin.sh",
+      "type": "file",
+      "name": "pin.sh",
+      "filePath": "scripts/pin.sh",
+      "summary": "Generates sets.txt from sets.in: resolves git refs to commits, fetches each set's files via GitHub API or archive extraction, computes SHA-256 checksums, parses SFZ #include chains to keep only needed files, and writes the pinned manifest.",
+      "tags": ["pinning", "manifest-generation", "checksums", "sfz-parsing"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/package/common.sh",
+      "type": "file",
+      "name": "common.sh",
+      "filePath": "scripts/package/common.sh",
+      "summary": "Shared library sourced by deb.sh and rpm.sh: defines package metadata (name, share path, summary, description) and the files_into() function that populates a packaging tree with install.sh, sets.txt, and the oxiguitar-install-sounds wrapper.",
+      "tags": ["packaging", "shared", "shell-library"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/package/deb.sh",
+      "type": "file",
+      "name": "deb.sh",
+      "filePath": "scripts/package/deb.sh",
+      "summary": "Builds the .deb package with debconf integration: generates control, templates, config, postinst, and postrm scripts; the postinst prompts users whether to download sets and which patches during installation; reads sets.txt for purge cleanup.",
+      "tags": ["packaging", "debian", "debconf", "installation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/package/rpm.sh",
+      "type": "file",
+      "name": "rpm.sh",
+      "filePath": "scripts/package/rpm.sh",
+      "summary": "Builds the .rpm package with an RPM spec file: generates %post and %preun scripts for on-install download and on-remove cleanup; no interactive prompts (RPM limitation), uses OXIGUITAR_SKIP_SOUNDS and OXIGUITAR_PATCHES environment variables for configuration.",
+      "tags": ["packaging", "redhat", "rpm", "installation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/fixture-sets.sh",
+      "type": "file",
+      "name": "fixture-sets.sh",
+      "filePath": "tests/fixture-sets.sh",
+      "summary": "Creates a minimal sets.txt with one tiny 'drums' set served from local files, enabling package testing without network access or the 1.5 GB of real sound files.",
+      "tags": ["testing", "fixture", "mock-data"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test-install.ps1",
+      "type": "file",
+      "name": "test-install.ps1",
+      "filePath": "tests/test-install.ps1",
+      "summary": "End-to-end test of install.ps1 against locally-served mock sets: validates --list, install, metadata, re-runs, old-version cleanup, checksum verification, patch selection, and uninstall; uses local file:// URLs and a tar.xz archive.",
+      "tags": ["testing", "powershell", "end-to-end", "installer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test-install.sh",
+      "type": "file",
+      "name": "test-install.sh",
+      "filePath": "tests/test-install.sh",
+      "summary": "Comprehensive end-to-end test of install.sh against locally-served mock sets: validates listing, install, metadata, re-runs, old-version cleanup, checksum repair, umask handling, parallel vs single-job, patch selection, tampered file rejection, and uninstall.",
+      "tags": ["testing", "shell", "end-to-end", "installer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:.github/dependabot.yml",
+      "type": "config",
+      "name": "dependabot.yml",
+      "filePath": ".github/dependabot.yml",
+      "summary": "Dependabot configuration for weekly automated version updates of Rust crates (cargo) and GitHub Actions, targeting the develop branch with a limit of 5 open PRs.",
+      "tags": ["configuration", "dependabot", "dependency-updates", "automation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:.github/pull_request_template.md",
+      "type": "document",
+      "name": "pull_request_template.md",
+      "filePath": ".github/pull_request_template.md",
+      "summary": "GitHub pull request template requiring a description of changes, testing steps, and a checklist covering tests, documentation, credits, and DCO sign-off.",
+      "tags": ["documentation", "contribution", "template"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:VERSION",
+      "type": "file",
+      "name": "VERSION",
+      "filePath": "VERSION",
+      "summary": "Single-line version file containing the current project version (0.2.2), consumed by the release workflow for package naming.",
+      "tags": ["versioning", "metadata"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/package/oxiguitar-install-sounds.1",
+      "type": "file",
+      "name": "oxiguitar-install-sounds.1",
+      "filePath": "scripts/package/oxiguitar-install-sounds.1",
+      "summary": "Man page for the oxiguitar-install-sounds command, documenting all options (--list, --sets, --dir, --system, --patches, --yes, --uninstall) and describing the installation workflow.",
+      "tags": ["documentation", "man-page", "user-command"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:sets.in",
+      "type": "file",
+      "name": "sets.in",
+      "filePath": "sets.in",
+      "summary": "Source definition of all 8 sound sets with 11 pipe-separated fields per line: id, name, role, licence, credit, GitHub repository, ref, instrument .sfz, install name, notice, and optional patches glob.",
+      "tags": ["configuration", "sound-set-definitions", "source-of-truth"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:scripts/check-sets.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:scripts/check-dco.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:install.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:install.ps1",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:tests/test-install.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:tests/test-install.ps1",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:scripts/package/deb.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:scripts/package/rpm.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/release.yml",
+      "target": "file:scripts/package/deb.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/release.yml",
+      "target": "file:scripts/package/rpm.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/release.yml",
+      "target": "file:VERSION",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/release.yml",
+      "target": "file:tests/fixture-sets.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/release.yml",
+      "target": "document:CHANGELOG.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "pipeline:.github/workflows/pin.yml",
+      "target": "file:scripts/pin.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pin.yml",
+      "target": "file:sets.in",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/pin.yml",
+      "target": "document:sets.txt",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/publish.yml",
+      "target": "file:install.sh",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/publish.yml",
+      "target": "file:install.ps1",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "pipeline:.github/workflows/publish.yml",
+      "target": "document:sets.txt",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:install.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:install.ps1",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:sets.txt",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:VERSION",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CHANGELOG.md",
+      "target": "file:install.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "document:CONTRIBUTING.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:install.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CONTRIBUTING.md",
+      "target": "file:scripts/check-dco.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:deny.toml",
+      "target": "config:clippy.toml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:deny.toml",
+      "target": "config:rustfmt.toml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:install.sh",
+      "target": "document:sets.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:install.sh",
+      "target": "file:install.ps1",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:install.sh",
+      "target": "document:sets.txt",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:install.ps1",
+      "target": "document:sets.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:install.ps1",
+      "target": "file:install.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:sets.txt",
+      "target": "file:sets.in",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/check-dco.sh",
+      "target": "document:CONTRIBUTING.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/check-dco.sh",
+      "target": "pipeline:.github/workflows/ci.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/check-sets.sh",
+      "target": "file:sets.in",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/check-sets.sh",
+      "target": "document:sets.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/check-sets.sh",
+      "target": "pipeline:.github/workflows/ci.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/pin.sh",
+      "target": "file:sets.in",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/pin.sh",
+      "target": "document:sets.txt",
+      "type": "produces",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/pin.sh",
+      "target": "pipeline:.github/workflows/pin.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/pin.sh",
+      "target": "file:scripts/check-sets.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/package/common.sh",
+      "target": "file:install.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/common.sh",
+      "target": "document:sets.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/common.sh",
+      "target": "file:scripts/package/oxiguitar-install-sounds.1",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/package/deb.sh",
+      "target": "file:scripts/package/common.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/package/deb.sh",
+      "target": "file:scripts/package/oxiguitar-install-sounds.1",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/deb.sh",
+      "target": "document:CHANGELOG.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/package/deb.sh",
+      "target": "document:sets.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/deb.sh",
+      "target": "pipeline:.github/workflows/release.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/rpm.sh",
+      "target": "file:scripts/package/common.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/package/rpm.sh",
+      "target": "document:sets.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/rpm.sh",
+      "target": "pipeline:.github/workflows/release.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/deb.sh",
+      "target": "file:scripts/package/rpm.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/test-install.sh",
+      "target": "file:install.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test-install.sh",
+      "target": "file:tests/fixture-sets.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/test-install.sh",
+      "target": "pipeline:.github/workflows/ci.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/test-install.ps1",
+      "target": "file:install.ps1",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test-install.ps1",
+      "target": "file:tests/fixture-sets.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/test-install.ps1",
+      "target": "pipeline:.github/workflows/ci.yml",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/fixture-sets.sh",
+      "target": "document:sets.txt",
+      "type": "produces",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/test-install.sh",
+      "target": "file:tests/test-install.ps1",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/test-install.sh",
+      "target": "file:scripts/package/deb.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/test-install.sh",
+      "target": "file:scripts/package/rpm.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.github/dependabot.yml",
+      "target": "file:scripts/check-dco.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:VERSION",
+      "target": "pipeline:.github/workflows/release.yml",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:VERSION",
+      "target": "file:scripts/package/deb.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:VERSION",
+      "target": "file:scripts/package/rpm.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:scripts/package/oxiguitar-install-sounds.1",
+      "target": "file:install.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/package/oxiguitar-install-sounds.1",
+      "target": "file:scripts/package/common.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:sets.in",
+      "target": "file:scripts/pin.sh",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:sets.in",
+      "target": "document:sets.txt",
+      "type": "produces",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:sets.in",
+      "target": "document:README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:.github/pull_request_template.md",
+      "target": "file:scripts/check-dco.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:.github/pull_request_template.md",
+      "target": "document:CONTRIBUTING.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:ci-cd",
+      "name": "CI/CD",
+      "description": "GitHub Actions workflows and automation configuration: main CI (lint, test, DCO validation), pinning (sets.txt regeneration), release (package building), and publishing. Dependabot handles weekly dependency updates.",
+      "nodeIds": [
+        "pipeline:.github/workflows/ci.yml",
+        "pipeline:.github/workflows/pin.yml",
+        "pipeline:.github/workflows/publish.yml",
+        "pipeline:.github/workflows/release.yml",
+        "config:.github/dependabot.yml",
+        "document:.github/pull_request_template.md"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation",
+      "description": "Project documentation: README (entry point), CONTRIBUTING (branch strategy, DCO), CHANGELOG, CLAUDE.md (AI assistant conventions), and the pull request template.",
+      "nodeIds": [
+        "document:README.md",
+        "document:CONTRIBUTING.md",
+        "document:CHANGELOG.md",
+        "document:CLAUDE.md"
+      ]
+    },
+    {
+      "id": "layer:core-installers",
+      "name": "Core Installers",
+      "description": "The main installer scripts that download and install sound sets with SHA-256 verification: install.sh (Linux/macOS) and install.ps1 (Windows). Both support listing, installing, uninstalling, and patch selection.",
+      "nodeIds": [
+        "file:install.sh",
+        "file:install.ps1"
+      ]
+    },
+    {
+      "id": "layer:manifest-system",
+      "name": "Manifest System",
+      "description": "The sound set manifest pipeline: sets.in defines 8 sound sets with metadata, pin.sh generates sets.txt with pinned checksums and URLs, and sets.txt is the generated manifest consumed by installers and packages.",
+      "nodeIds": [
+        "file:sets.in",
+        "document:sets.txt",
+        "file:scripts/pin.sh",
+        "file:VERSION"
+      ]
+    },
+    {
+      "id": "layer:validation",
+      "name": "Validation",
+      "description": "Quality gates: check-sets.sh validates sets.txt consistency against sets.in (counts, checksums, paths, licences, no path traversal), and check-dco.sh validates DCO sign-off on commits with bot skip rules.",
+      "nodeIds": [
+        "file:scripts/check-sets.sh",
+        "file:scripts/check-dco.sh"
+      ]
+    },
+    {
+      "id": "layer:packaging",
+      "name": "Packaging",
+      "description": "Package build scripts: common.sh provides shared metadata and file layout, deb.sh builds .deb packages with debconf prompts, and rpm.sh builds .rpm packages with environment-variable configuration.",
+      "nodeIds": [
+        "file:scripts/package/common.sh",
+        "file:scripts/package/deb.sh",
+        "file:scripts/package/rpm.sh",
+        "file:scripts/package/oxiguitar-install-sounds.1"
+      ]
+    },
+    {
+      "id": "layer:testing",
+      "name": "Testing",
+      "description": "End-to-end tests for installers using locally-served mock sets: test-install.sh for Bash and test-install.ps1 for PowerShell, plus fixture-sets.sh for creating minimal test fixtures.",
+      "nodeIds": [
+        "file:tests/test-install.sh",
+        "file:tests/test-install.ps1",
+        "file:tests/fixture-sets.sh"
+      ]
+    },
+    {
+      "id": "layer:rust-config",
+      "name": "Rust Configuration",
+      "description": "Rust tooling configuration for the OxiGuitar project's Rust components: clippy.toml (linting rules), deny.toml (license and dependency checks), and rustfmt.toml (code formatting).",
+      "nodeIds": [
+        "config:clippy.toml",
+        "config:deny.toml",
+        "config:rustfmt.toml"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README to understand what this project does: it installs OxiGuitar's recommended sound sets (clean, overdriven and distorted electric guitar, nylon and steel-string guitar, ukulele, bass and drums) with SHA-256 verification.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Sound Set Definitions",
+      "description": "Explore sets.in — the source of truth defining all 8 sound sets with their metadata, source repositories, and instrument paths. Then see how pin.sh transforms this into sets.txt, a pinned manifest with SHA-256 checksums and commit-pinned URLs.",
+      "nodeIds": [
+        "file:sets.in",
+        "file:scripts/pin.sh",
+        "document:sets.txt"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Main Installers",
+      "description": "Study install.sh (Bash) and install.ps1 (PowerShell) — the core installers that download sound set files, verify SHA-256 checksums, extract archives, and create oxiguitar-set.json metadata. They support listing, installing, uninstalling, and choosing between recommended or all patches.",
+      "nodeIds": [
+        "file:install.sh",
+        "file:install.ps1"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Validation Gates",
+      "description": "Understand the quality checks: check-sets.sh validates the manifest's internal consistency (counts, checksums, paths, licences, no path traversal), and check-dco.sh ensures every commit has a DCO sign-off, with automatic skip rules for bot commits.",
+      "nodeIds": [
+        "file:scripts/check-sets.sh",
+        "file:scripts/check-dco.sh"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Package Building",
+      "description": "Learn how the project builds .deb and .rpm packages. common.sh provides shared metadata and the file layout function. deb.sh creates Debian packages with debconf interactive prompts. rpm.sh creates RPM packages with environment-variable configuration (no interactive prompts).",
+      "nodeIds": [
+        "file:scripts/package/common.sh",
+        "file:scripts/package/deb.sh",
+        "file:scripts/package/rpm.sh",
+        "file:scripts/package/oxiguitar-install-sounds.1"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Testing",
+      "description": "Examine the end-to-end tests that run installers against locally-served mock sets without network access. fixture-sets.sh creates minimal test fixtures. test-install.sh covers the Bash installer and test-install.ps1 covers PowerShell — both validate install, uninstall, checksum verification, patch selection, and old-version cleanup.",
+      "nodeIds": [
+        "file:tests/test-install.sh",
+        "file:tests/test-install.ps1",
+        "file:tests/fixture-sets.sh"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "CI/CD Pipelines",
+      "description": "Review the four GitHub Actions workflows: ci.yml (main CI with linting, testing, and DCO validation), pin.yml (regenerates sets.txt), release.yml (builds packages and creates draft releases), and publish.yml (validates release assets and notifies the package repository).",
+      "nodeIds": [
+        "pipeline:.github/workflows/ci.yml",
+        "pipeline:.github/workflows/pin.yml",
+        "pipeline:.github/workflows/release.yml",
+        "pipeline:.github/workflows/publish.yml",
+        "config:.github/dependabot.yml"
+      ]
+    }
+  ]
+}
