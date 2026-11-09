@@ -17,7 +17,8 @@ Usage: install.sh [options]
 
   --list           show the sound sets and exit
   --sets A,B,...   install these sets (or "all"); without it, you are asked
-  --dir DIR        install into DIR (default: your OxiGuitar soundfonts folder)
+  --dir DIR        install into DIR (default: your OxiGuitar soundfonts folder,
+                   and OxiGuitar's Flatpak's own when that is installed)
   --system         install for every user, into /usr/share/oxiguitar/soundfonts
   --patches WHICH  "all" also installs every other instrument ("patch") a set has;
                    "recommended" only the one it recommends; without it, you
@@ -69,6 +70,8 @@ if [ "$list" = 1 ]; then
     exit 0
 fi
 
+dir_given=0
+[ -z "$dir" ] || dir_given=1
 if [ -z "$dir" ]; then
     if [ "$system" = 1 ]; then
         dir="/usr/share/oxiguitar/soundfonts"
@@ -78,6 +81,25 @@ if [ -z "$dir" ]; then
         dir="$HOME/Library/Application Support/OxiGuitar/soundfonts"
     else
         dir="${XDG_DATA_HOME:-$HOME/.local/share}/oxiguitar/soundfonts"
+    fi
+fi
+
+# OxiGuitar's Flatpak sees only its own folders (~/.var/app/ID/data), not
+# the one above or the system's, so when it is installed its soundfonts
+# folder gets the sets too (Mateus, 9 Nov 2026): hard-linked to the first
+# copy where it can, so they take no more room. Without OxiGuitar installed
+# any other way (no program, no folder yet), only the Flatpak's folder.
+flatpak_id=io.github.mateusrdp.OxiGuitar
+also=""
+if [ "$dir_given" = 0 ] && [ "$system" = 0 ] && [ -z "${OXIGUITAR_HOME:-}" ] && [ "$(uname -s)" != Darwin ]; then
+    if [ -d "$HOME/.var/app/$flatpak_id" ] ||
+        { command -v flatpak >/dev/null 2>&1 && flatpak info "$flatpak_id" >/dev/null 2>&1; }; then
+        flatpak_dir="$HOME/.var/app/$flatpak_id/data/oxiguitar/soundfonts"
+        if [ -d "$dir" ] || command -v oxiguitar >/dev/null 2>&1 || command -v oxiguitar-x11 >/dev/null 2>&1; then
+            also="$flatpak_dir"
+        else
+            dir="$flatpak_dir"
+        fi
     fi
 fi
 
@@ -122,11 +144,15 @@ confirm() {
 
 if [ "$remove" = 1 ]; then
     echo "This removes, from $dir:"
+    [ -z "$also" ] || echo "(and from OxiGuitar's Flatpak, $also)"
     for id in $chosen; do echo "  $id"; done
     confirm "Remove them?" || { echo "Nothing removed."; exit 0; }
     for id in $chosen; do
         # Only a folder this installer made (it holds oxiguitar-set.json).
         if [ -f "$dir/$id/oxiguitar-set.json" ]; then rm -rf "${dir:?}/$id"; echo "removed $id"; else echo "$id: not installed"; fi
+        if [ -n "$also" ] && [ -f "$also/$id/oxiguitar-set.json" ]; then
+            rm -rf "${also:?}/$id"; echo "removed $id from the Flatpak's folder"
+        fi
     done
     exit 0
 fi
@@ -152,6 +178,10 @@ done
 total=0
 echo "These sets will be installed into:"
 echo "  $dir"
+if [ -n "$also" ]; then
+    echo "and, for OxiGuitar's Flatpak, which sees only its own folder, into:"
+    echo "  $also"
+fi
 echo
 for id in $chosen; do
     size="$(field "$id" 9)"
@@ -398,6 +428,26 @@ credits="$dir/CREDITS.txt"
         echo
     done
 } > "$credits"
+
+# The same sets in the Flatpak's folder: a fresh copy of each set installed
+# above, hard links where the folders share a disk. A folder there that this
+# installer did not make is left alone.
+if [ -n "$also" ]; then
+    mkdir -p "$also"
+    for id in $chosen; do
+        [ -f "$dir/$id/oxiguitar-set.json" ] || continue
+        if [ -e "$also/$id" ] && [ ! -f "$also/$id/oxiguitar-set.json" ]; then
+            echo "$also/$id is not this installer's: left as it is"
+            continue
+        fi
+        rm -rf "${also:?}/$id"
+        cp -Rl "$dir/$id" "$also/$id" 2>/dev/null || { rm -rf "${also:?}/$id"; cp -R "$dir/$id" "$also/$id"; }
+        chmod -R a+rX "$also/$id"
+    done
+    cp "$credits" "$also/CREDITS.txt"
+    echo
+    echo "OxiGuitar's Flatpak has them too, in $also"
+fi
 
 echo
 echo "Done. OxiGuitar plays each kind of track with its set from the next time it plays; Tools, Plugins, MIDI (SoundFont, SFZ), Settings changes them."
