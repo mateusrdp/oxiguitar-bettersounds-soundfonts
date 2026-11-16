@@ -4,6 +4,8 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-11-16
+
 ### Added
 
 - **OxiGuitar's Flatpak** (#163): when the Flatpak is installed, `install.sh` also installs the sets into its own folder, `~/.var/app/io.github.mateusrdp.OxiGuitar/data/oxiguitar/soundfonts`, the only one the Flatpak can see (hard links where it can, so they take no more room), or only there when OxiGuitar isn't installed any other way; `--uninstall` removes them from both. `--dir`, `--system` and `OXIGUITAR_HOME` leave it out.
