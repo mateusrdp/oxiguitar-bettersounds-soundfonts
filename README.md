@@ -91,9 +91,20 @@ mind.
 | macOS | `~/Library/Application Support/OxiGuitar/soundfonts/` |
 | Windows | `%APPDATA%\OxiGuitar\soundfonts\` |
 | For every user (Linux) | `./install.sh --system`, into `/usr/share/oxiguitar/soundfonts/` (run as root) |
+| OxiGuitar's Flatpak (Linux) | `~/.var/app/io.github.mateusrdp.OxiGuitar/data/oxiguitar/soundfonts/`, filled by `install.sh` by itself (below) |
 
 `OXIGUITAR_HOME` moves OxiGuitar's whole data folder; the installer follows
 it. `--dir DIR` (`-Dir DIR`) picks any other folder.
+
+OxiGuitar's Flatpak sees only its own folders, not the ones above, so when
+it is installed (`flatpak info io.github.mateusrdp.OxiGuitar` finds it, or
+its folder under `~/.var/app` exists) `install.sh` installs into the
+Flatpak's `soundfonts` folder as well, and says so: the files there are hard
+links to the first copy where both folders are on one disk, so they take no
+more room. With no other OxiGuitar installed (no `oxiguitar` program and no
+folder of its own yet), the Flatpak's folder is the only one. `--uninstall`
+removes the sets from both. `--dir`, `--system` and `OXIGUITAR_HOME` leave the
+Flatpak's folder out.
 
 Each set gets its own folder holding the instrument, its samples, its
 licence and an `oxiguitar-set.json` that tells OxiGuitar what it is (its

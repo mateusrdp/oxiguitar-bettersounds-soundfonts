@@ -1,0 +1,10 @@
+{
+  "gitCommitHash": "9cfc3a884c8d9e689eaa573c193a9656cb44e0e5",
+  "createdAt": "2026-11-08T00:00:00Z",
+  "updatedAt": "2026-11-08T00:00:00Z",
+  "version": "1.0.0",
+  "totalNodes": 28,
+  "totalEdges": 77,
+  "totalLayers": 8,
+  "tourSteps": 7
+}

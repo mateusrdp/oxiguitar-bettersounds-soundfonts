@@ -1,0 +1,36 @@
+{
+  "gitCommitHash": "9cfc3a884c8d9e689eaa573c193a9656cb44e0e5",
+  "fingerprints": {
+    "version": 1,
+    "files": {
+      ".github/dependabot.yml": "config",
+      ".github/pull_request_template.md": "docs",
+      ".github/workflows/ci.yml": "infra",
+      ".github/workflows/pin.yml": "infra",
+      ".github/workflows/publish.yml": "infra",
+      ".github/workflows/release.yml": "infra",
+      "CHANGELOG.md": "docs",
+      "CLAUDE.md": "docs",
+      "CONTRIBUTING.md": "docs",
+      "README.md": "docs",
+      "clippy.toml": "config",
+      "deny.toml": "config",
+      "install.ps1": "script",
+      "install.sh": "script",
+      "rustfmt.toml": "config",
+      "sets.txt": "docs",
+      "sets.in": "code",
+      "tests/fixture-sets.sh": "script",
+      "tests/test-install.ps1": "script",
+      "tests/test-install.sh": "script",
+      "VERSION": "code",
+      "scripts/check-dco.sh": "script",
+      "scripts/check-sets.sh": "script",
+      "scripts/package/common.sh": "script",
+      "scripts/package/deb.sh": "script",
+      "scripts/package/oxiguitar-install-sounds.1": "code",
+      "scripts/package/rpm.sh": "script",
+      "scripts/pin.sh": "script"
+    }
+  }
+}
