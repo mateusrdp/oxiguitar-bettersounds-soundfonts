@@ -1,6 +1,6 @@
 # Hear it
 
-A few of OxiGuitar's own reference songs, played by OxiGuitar exactly as they sound in the window. They were rendered with `oxiguitar-cli play SONG --wav OUT`, with no effects or editing afterwards, and then encoded as MP3. Every set heard here is free and listed in the [overview](README.md).
+A few of OxiGuitar's own reference songs, played by OxiGuitar exactly as they sound in the window. They were rendered with `oxiguitar-cli play SONG --wav OUT`, with no effects or editing afterwards, and then encoded as MP3. Every set heard here is free and listed in the [overview](index.html).
 
 ## Recorded guitars, basses and drums
 
