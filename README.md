@@ -27,6 +27,10 @@ sets come from [FreePats](https://freepats.zenvoid.org/), a project of
 freely licensed sound banks, the bass and the Black and Green Guitars from Karoryfer Samples, and the drum kit from DrumGizmo; their files
 are fetched from the places listed in `sets.txt`.
 
+## Manual
+
+The manual is at <https://mateusrdp.github.io/oxiguitar-bettersounds-soundfonts/>. Its source is in [docs/manual](docs/manual). It covers what the plugin is for, how it works, what it needs and how to install it.
+
 ## Install
 
 **With the .deb or .rpm** (apt, dnf), installing the package installs the
