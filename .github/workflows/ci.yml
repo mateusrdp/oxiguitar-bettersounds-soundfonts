@@ -172,6 +172,24 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./tests/test-install.ps1
+      - name: The .deb and the .rpm, built and checked without installing
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends rpm lintian
+          tests/test-packages.sh deb
+          tests/test-packages.sh rpm
+      # Every feature on the manual's Features page names a stage of
+      # tests/suite.json that exists (docs/manual/src/testing.md; the full
+      # run is scripts/test-all.py).
+      - name: Features page
+        shell: bash
+        run: |
+          py=$(command -v python3 || command -v python)
+          "$py" scripts/test-all.py --features-only --out target/test-all/ci || {
+            cat target/test-all/ci/summary.md
+            echo "::error title=Features page (${{ matrix.name }})::$(grep -E '^- ' target/test-all/ci/summary.md | head -n 20 | sed -z 's/%/%25/g; s/\n/%0A/g')"
+            exit 1
+          }
 
   dco:
     name: Sign-off (DCO)

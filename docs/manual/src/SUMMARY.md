@@ -7,3 +7,5 @@
 - [Requirements and assumptions](requirements.md)
 - [Installing](install.md)
 - [Hear it](hear-it.md)
+- [Features and their tests](features.md)
+- [Testing](testing.md)

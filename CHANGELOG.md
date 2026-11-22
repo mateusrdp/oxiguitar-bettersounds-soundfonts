@@ -4,6 +4,15 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added
+
+- **Every test with one command** (mateusrdp/oxiguitar#273): `scripts/test-all.py` builds and runs all of this repository's tests, with a progress bar, a summary to paste into an issue and a log to diagnose from. The manual has a Features page naming the tests of every feature (CI checks it) and a Testing page.
+- `tests/test-packages.sh deb|rpm` builds the `.deb` or the `.rpm` and checks it without installing it; CI runs it on Linux for every pull request, not only at release.
+
+### Fixed
+
+- The `.rpm` of a version with a dash (such as `0.3.0-rc.1`) failed to build: bash 5.2 turned the `~` that replaces the dash into the home folder's path.
+
 ## [0.2.3] - 2026-11-16
 
 ### Added
