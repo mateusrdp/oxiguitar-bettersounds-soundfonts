@@ -153,6 +153,14 @@ them once to compute their checksums and writes `sets.txt`; commit both.
 `scripts/check-sets.sh` checks they agree, and `tests/` runs both
 installers against made-up sets without the network.
 
+## Testing
+
+Every test, with one command (the manual's Testing page says more, and how to report a failure):
+
+```sh
+python3 scripts/test-all.py
+```
+
 ## Licence
 
 The installer and scripts: GPL-3.0-or-later. See LICENSE. The sound sets
