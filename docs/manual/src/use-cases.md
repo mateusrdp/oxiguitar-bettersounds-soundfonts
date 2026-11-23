@@ -1,4 +1,14 @@
-# What you can do with it
+# How to use it
+
+1. Install the sets: with the package (`oxiguitar-bettersounds-soundfonts` on Debian, Ubuntu and Fedora), or by running the installer by hand (below). The installer shows what it would download and asks first.
+2. Open a song in OxiGuitar and press Play. Each kind of track picks up its matching set by itself.
+3. To see or change which set plays what, choose **Plugins → MIDI Sound Sets…** in OxiGuitar:
+
+![The MIDI plugin's Sound Sets dialog: one list for each kind of track, clean, overdriven and distorted guitars, nylon-string and steel-string guitars, basses and more](images/midi-sound-sets.png)
+
+With the sets installed, each list offers them by name (Clean Guitar, Distorted Guitar, Bass, Drums and so on) beside any other set you have. This picture shows the dialog before installing, with only the system's basic set.
+
+## What you can do with it
 
 - Get good sounds in one step. Install the package and it downloads the sets, or run the installer by hand on any system.
 - Choose what to download. `./install.sh --list` shows what is on offer, and `--sets bass,drums` takes only those.
