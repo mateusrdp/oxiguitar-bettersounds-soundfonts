@@ -8,6 +8,8 @@ This repository picks one good, free instrument for each job, so you do not
 have to hunt for them. Each set is **one instrument** with no variations to
 choose between: pick the set for a track and it sounds right.
 
+In plain words: a sound set is a library of recordings that turns notes into sound. Every computer has a basic one, with a few short recordings per instrument stretched over every note. These sets are each one instrument recorded in depth, string by string and soft to hard, which is why they sound so much closer to the real thing, and why they are big. The [manual](https://mateusrdp.github.io/oxiguitar-bettersounds-soundfonts/) explains more, and lets you hear the difference.
+
 ## The sets
 
 | Set | Sound | Size | Licence | By |
@@ -144,6 +146,8 @@ Every set is credited in its `oxiguitar-set.json`, in a `CREDITS.txt` the
 installer writes next to the sets, and in the licence file kept with it.
 The drum kit's licence (CC BY 4.0) asks for this credit wherever the sounds
 are used in a published recording: **Drum samples provided by DrumGizmo.org**.
+
+The manual's [Credits](https://mateusrdp.github.io/oxiguitar-bettersounds-soundfonts/credits.html) page lists every set's authors and licence, and the tools the installer uses. Thank you to Karoryfer Samples, the FreePats contributors and the DrumGizmo team for recording these instruments and giving them away.
 
 ## For maintainers
 

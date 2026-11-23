@@ -13,6 +13,10 @@ All notable changes. The format follows [Keep a Changelog](https://keepachangelo
 
 - The `.rpm` of a version with a dash (such as `0.3.0-rc.1`) failed to build: bash 5.2 turned the `~` that replaces the dash into the home folder's path.
 
+### Changed
+
+- **The manual explains the ideas behind the plugin** (its overview, with pictures), shows how to use it with screenshots, says in Architecture and strategy what it can't do yet, what is left out on purpose and where help is wanted, and has a Credits page listing every project it uses, with links and thanks. The README has a plain-words introduction and a Credits section.
+
 ## [0.2.3] - 2026-11-16
 
 ### Added
