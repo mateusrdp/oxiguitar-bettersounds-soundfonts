@@ -2,6 +2,327 @@
   "version": "1.0.0",
   "project": {
     "name": "oxiguitar-bettersounds-soundfonts",
+<<<<<<< HEAD
+    "description": "BetterSounds soundfont download and installer scripts for OxiGuitar",
+    "languages": [
+      "markdown",
+      "powershell",
+      "shell",
+      "toml"
+    ],
+    "frameworks": [],
+    "analyzedAt": "2026-11-26T22:00:00.000Z",
+    "analyzedCommit": "2787b109b42870acd4dd52a4f3790c96089a2197"
+  },
+  "nodes": [
+    {
+      "id": "file:.github/workflows/ci.yml",
+      "type": "pipeline",
+      "name": "CI",
+      "summary": "Build and test",
+      "tags": [
+        "ci"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/ci.yml"
+    },
+    {
+      "id": "file:.github/workflows/pin.yml",
+      "type": "pipeline",
+      "name": "Pin",
+      "summary": "Pin soundfont versions",
+      "tags": [
+        "ci"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/pin.yml"
+    },
+    {
+      "id": "file:.github/workflows/publish.yml",
+      "type": "pipeline",
+      "name": "Publish",
+      "summary": "Publish artifacts",
+      "tags": [
+        "ci"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/publish.yml"
+    },
+    {
+      "id": "file:.github/workflows/release.yml",
+      "type": "pipeline",
+      "name": "Release",
+      "summary": "Create releases",
+      "tags": [
+        "ci"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/workflows/release.yml"
+    },
+    {
+      "id": "file:README.md",
+      "type": "document",
+      "name": "README",
+      "summary": "BetterSounds soundfonts: download and install scripts",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple",
+      "filePath": "README.md"
+    },
+    {
+      "id": "file:CHANGELOG.md",
+      "type": "document",
+      "name": "CHANGELOG",
+      "summary": "Version history",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple",
+      "filePath": "CHANGELOG.md"
+    },
+    {
+      "id": "file:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE",
+      "summary": "Dev guidelines",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple",
+      "filePath": "CLAUDE.md"
+    },
+    {
+      "id": "file:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING",
+      "summary": "Contributor guidelines",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple",
+      "filePath": "CONTRIBUTING.md"
+    },
+    {
+      "id": "file:clippy.toml",
+      "type": "config",
+      "name": "clippy.toml",
+      "summary": "Clippy config",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "clippy.toml"
+    },
+    {
+      "id": "file:deny.toml",
+      "type": "config",
+      "name": "deny.toml",
+      "summary": "Cargo deny",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "deny.toml"
+    },
+    {
+      "id": "file:rustfmt.toml",
+      "type": "config",
+      "name": "rustfmt.toml",
+      "summary": "Rustfmt config",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "rustfmt.toml"
+    },
+    {
+      "id": "file:install.sh",
+      "type": "script",
+      "name": "install.sh",
+      "summary": "Linux/Mac soundfont installer",
+      "tags": [
+        "script"
+      ],
+      "complexity": "moderate",
+      "filePath": "install.sh"
+    },
+    {
+      "id": "file:install.ps1",
+      "type": "script",
+      "name": "install.ps1",
+      "summary": "Windows soundfont installer",
+      "tags": [
+        "script"
+      ],
+      "complexity": "moderate",
+      "filePath": "install.ps1"
+    },
+    {
+      "id": "file:sets.txt",
+      "type": "document",
+      "name": "sets.txt",
+      "summary": "Soundfont set definitions: URLs, checksums, versions",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex",
+      "filePath": "sets.txt"
+    },
+    {
+      "id": "file:scripts/check-dco.sh",
+      "type": "script",
+      "name": "check-dco.sh",
+      "summary": "DCO sign-off checker",
+      "tags": [
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/check-dco.sh"
+    },
+    {
+      "id": "file:scripts/check-sets.sh",
+      "type": "script",
+      "name": "check-sets.sh",
+      "summary": "Validates sets.txt format and checksums",
+      "tags": [
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/check-sets.sh"
+    },
+    {
+      "id": "file:scripts/pin.sh",
+      "type": "script",
+      "name": "pin.sh",
+      "summary": "Pins soundfont versions in sets.txt",
+      "tags": [
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/pin.sh"
+    },
+    {
+      "id": "file:scripts/package/common.sh",
+      "type": "script",
+      "name": "common.sh",
+      "summary": "Shared packaging functions",
+      "tags": [
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/package/common.sh"
+    },
+    {
+      "id": "file:scripts/package/deb.sh",
+      "type": "script",
+      "name": "deb.sh",
+      "summary": "Debian package builder",
+      "tags": [
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/package/deb.sh"
+    },
+    {
+      "id": "file:scripts/package/rpm.sh",
+      "type": "script",
+      "name": "rpm.sh",
+      "summary": "RPM package builder",
+      "tags": [
+        "script"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/package/rpm.sh"
+    },
+    {
+      "id": "file:tests/fixture-sets.sh",
+      "type": "script",
+      "name": "fixture-sets.sh",
+      "summary": "Test fixture set definitions",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple",
+      "filePath": "tests/fixture-sets.sh"
+    },
+    {
+      "id": "file:tests/test-install.sh",
+      "type": "script",
+      "name": "test-install.sh",
+      "summary": "Linux/Mac installation tests",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple",
+      "filePath": "tests/test-install.sh"
+    },
+    {
+      "id": "file:tests/test-install.ps1",
+      "type": "script",
+      "name": "test-install.ps1",
+      "summary": "Windows installation tests",
+      "tags": [
+        "test"
+      ],
+      "complexity": "simple",
+      "filePath": "tests/test-install.ps1"
+    },
+    {
+      "id": "file:.github/dependabot.yml",
+      "type": "config",
+      "name": "dependabot.yml",
+      "summary": "Automated dependency updates",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/dependabot.yml"
+    },
+    {
+      "id": "file:.github/pull_request_template.md",
+      "type": "docs",
+      "name": "PR template",
+      "summary": "PR checklist",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple",
+      "filePath": ".github/pull_request_template.md"
+    },
+    {
+      "id": "file:VERSION",
+      "type": "config",
+      "name": "VERSION",
+      "summary": "Current version number",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "VERSION"
+    },
+    {
+      "id": "file:scripts/package/oxiguitar-install-sounds.1",
+      "type": "script",
+      "name": "oxiguitar-install-sounds.1",
+      "summary": "Man page for installer script",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/package/oxiguitar-install-sounds.1"
+    },
+    {
+      "id": "file:sets.in",
+      "type": "config",
+      "name": "sets.in",
+      "summary": "Template for sets.txt generation",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple",
+      "filePath": "sets.in"
+=======
     "description": "Recommended free sound sets for OxiGuitar, with installers for Linux/macOS/Windows and package builds for .deb and .rpm",
     "languages": ["shell", "powershell", "yaml", "markdown", "toml", "txt", "1"],
     "frameworks": [],
@@ -262,10 +583,24 @@
       "summary": "Source definition of all 8 sound sets with 11 pipe-separated fields per line: id, name, role, licence, credit, GitHub repository, ref, instrument .sfz, install name, notice, and optional patches glob.",
       "tags": ["configuration", "sound-set-definitions", "source-of-truth"],
       "complexity": "simple"
+>>>>>>> origin/develop
     }
   ],
   "edges": [
     {
+<<<<<<< HEAD
+      "source": "file:.github/workflows/ci.yml",
+      "target": "file:.github/workflows/pin.yml",
+      "type": "related",
+      "direction": "bidirectional",
+      "weight": 0.5
+    },
+    {
+      "source": "file:.github/workflows/publish.yml",
+      "target": "file:.github/workflows/release.yml",
+      "type": "related",
+      "direction": "bidirectional",
+=======
       "source": "pipeline:.github/workflows/ci.yml",
       "target": "file:scripts/check-sets.sh",
       "type": "triggers",
@@ -466,10 +801,45 @@
       "target": "config:rustfmt.toml",
       "type": "related",
       "direction": "forward",
+>>>>>>> origin/develop
       "weight": 0.5
     },
     {
       "source": "file:install.sh",
+<<<<<<< HEAD
+      "target": "file:sets.txt",
+      "type": "uses",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "file:install.ps1",
+      "target": "file:sets.txt",
+      "type": "uses",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "file:deny.toml",
+      "target": "file:clippy.toml",
+      "type": "related",
+      "direction": "bidirectional",
+      "weight": 0.5
+    },
+    {
+      "source": "file:scripts/check-sets.sh",
+      "target": "file:sets.txt",
+      "type": "validates",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/pin.sh",
+      "target": "file:sets.txt",
+      "type": "updates",
+      "direction": "forward",
+      "weight": 0.8
+=======
       "target": "document:sets.txt",
       "type": "depends_on",
       "direction": "forward",
@@ -593,10 +963,16 @@
       "type": "related",
       "direction": "forward",
       "weight": 0.5
+>>>>>>> origin/develop
     },
     {
       "source": "file:scripts/package/deb.sh",
       "target": "file:scripts/package/common.sh",
+<<<<<<< HEAD
+      "type": "depends-on",
+      "direction": "forward",
+      "weight": 0.9
+=======
       "type": "depends_on",
       "direction": "forward",
       "weight": 0.7
@@ -628,10 +1004,16 @@
       "type": "triggers",
       "direction": "forward",
       "weight": 0.6
+>>>>>>> origin/develop
     },
     {
       "source": "file:scripts/package/rpm.sh",
       "target": "file:scripts/package/common.sh",
+<<<<<<< HEAD
+      "type": "depends-on",
+      "direction": "forward",
+      "weight": 0.9
+=======
       "type": "depends_on",
       "direction": "forward",
       "weight": 0.7
@@ -656,10 +1038,16 @@
       "type": "related",
       "direction": "forward",
       "weight": 0.5
+>>>>>>> origin/develop
     },
     {
       "source": "file:tests/test-install.sh",
       "target": "file:install.sh",
+<<<<<<< HEAD
+      "type": "tests",
+      "direction": "forward",
+      "weight": 0.8
+=======
       "type": "depends_on",
       "direction": "forward",
       "weight": 0.7
@@ -677,10 +1065,21 @@
       "type": "triggers",
       "direction": "forward",
       "weight": 0.6
+>>>>>>> origin/develop
     },
     {
       "source": "file:tests/test-install.ps1",
       "target": "file:install.ps1",
+<<<<<<< HEAD
+      "type": "tests",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:tests/fixture-sets.sh",
+      "target": "file:sets.txt",
+      "type": "references",
+=======
       "type": "depends_on",
       "direction": "forward",
       "weight": 0.7
@@ -773,11 +1172,18 @@
       "source": "file:sets.in",
       "target": "file:scripts/pin.sh",
       "type": "depends_on",
+>>>>>>> origin/develop
       "direction": "forward",
       "weight": 0.7
     },
     {
       "source": "file:sets.in",
+<<<<<<< HEAD
+      "target": "file:sets.txt",
+      "type": "templates",
+      "direction": "forward",
+      "weight": 0.8
+=======
       "target": "document:sets.txt",
       "type": "produces",
       "direction": "forward",
@@ -803,10 +1209,69 @@
       "type": "related",
       "direction": "forward",
       "weight": 0.5
+>>>>>>> origin/develop
     }
   ],
   "layers": [
     {
+<<<<<<< HEAD
+      "name": "CI/CD Pipelines",
+      "nodes": [
+        "file:.github/workflows/ci.yml",
+        "file:.github/workflows/pin.yml",
+        "file:.github/workflows/publish.yml",
+        "file:.github/workflows/release.yml"
+      ],
+      "description": "CI/CD Pipelines layer"
+    },
+    {
+      "name": "Documentation",
+      "nodes": [
+        "file:README.md",
+        "file:CHANGELOG.md",
+        "file:CONTRIBUTING.md"
+      ],
+      "description": "Documentation layer"
+    },
+    {
+      "name": "Scripts",
+      "nodes": [
+        "file:CLAUDE.md",
+        "file:install.sh",
+        "file:install.ps1",
+        "file:scripts/check-dco.sh",
+        "file:scripts/check-sets.sh",
+        "file:scripts/pin.sh",
+        "file:scripts/package/common.sh",
+        "file:scripts/package/deb.sh",
+        "file:scripts/package/rpm.sh",
+        "file:tests/test-install.sh",
+        "file:tests/test-install.ps1",
+        "file:.github/dependabot.yml",
+        "file:.github/pull_request_template.md",
+        "file:scripts/package/oxiguitar-install-sounds.1"
+      ],
+      "description": "Scripts layer"
+    },
+    {
+      "name": "Configuration",
+      "nodes": [
+        "file:clippy.toml",
+        "file:deny.toml",
+        "file:rustfmt.toml",
+        "file:sets.txt",
+        "file:VERSION",
+        "file:sets.in"
+      ],
+      "description": "Configuration layer"
+    },
+    {
+      "name": "Test Infrastructure",
+      "nodes": [
+        "file:tests/fixture-sets.sh"
+      ],
+      "description": "Test Infrastructure layer"
+=======
       "id": "layer:ci-cd",
       "name": "CI/CD",
       "description": "GitHub Actions workflows and automation configuration: main CI (lint, test, DCO validation), pinning (sets.txt regeneration), release (package building), and publishing. Dependabot handles weekly dependency updates.",
@@ -889,10 +1354,50 @@
         "config:deny.toml",
         "config:rustfmt.toml"
       ]
+>>>>>>> origin/develop
     }
   ],
   "tour": [
     {
+<<<<<<< HEAD
+      "title": "Overview",
+      "nodeId": "file:README.md",
+      "summary": "BetterSounds soundfonts overview",
+      "layer": "Documentation"
+    },
+    {
+      "title": "install.sh",
+      "nodeId": "file:install.sh",
+      "summary": "install.sh component",
+      "layer": "Scripts"
+    },
+    {
+      "title": "install.ps1",
+      "nodeId": "file:install.ps1",
+      "summary": "install.ps1 component",
+      "layer": "Scripts"
+    },
+    {
+      "title": "sets.txt",
+      "nodeId": "file:sets.txt",
+      "summary": "sets.txt component",
+      "layer": "Configuration"
+    },
+    {
+      "title": "",
+      "nodeId": "file:scripts/package/common.sh",
+      "summary": "scripts/package/ component",
+      "layer": "Scripts"
+    },
+    {
+      "title": "ci.yml",
+      "nodeId": "file:.github/workflows/ci.yml",
+      "summary": ".github/workflows/ci.yml component",
+      "layer": "CI/CD Pipelines"
+    }
+  ]
+}
+=======
       "order": 1,
       "title": "Project Overview",
       "description": "Start with the README to understand what this project does: it installs OxiGuitar's recommended sound sets (clean, overdriven and distorted electric guitar, nylon and steel-string guitar, ukulele, bass and drums) with SHA-256 verification.",
@@ -963,3 +1468,4 @@
     }
   ]
 }
+>>>>>>> origin/develop
