@@ -148,6 +148,36 @@ grep -q 'checksum' "$work/log" || fail "no explanation for the bad checksum"
 "$root/install.sh" --yes --uninstall --sets first --dir "$out" > /dev/null || fail "uninstall failed"
 [ ! -e "$out/first" ] || fail "uninstall left the set"
 
+# OxiGuitar's Flatpak (its folder under ~/.var/app) gets the sets in its own
+# soundfonts folder: alone when OxiGuitar has no other folder, as well as the
+# usual one when it has. --dir, --system and OXIGUITAR_HOME leave it out.
+if [ "$(uname -s)" = Linux ]; then
+    fp_home="$work/home"
+    fp_dir="$fp_home/.var/app/io.github.mateusrdp.OxiGuitar/data/oxiguitar/soundfonts"
+    native="$fp_home/.local/share/oxiguitar/soundfonts"
+    mkdir -p "$fp_home/.var/app/io.github.mateusrdp.OxiGuitar"
+    fp() { env -u XDG_DATA_HOME -u OXIGUITAR_HOME HOME="$fp_home" "$root/install.sh" "$@"; }
+    fp --yes --sets first > "$work/log" || { cat "$work/log"; fail "install with the Flatpak failed"; }
+    [ "$(cat "$fp_dir/first/First Guitar.sfz")" = "sfz one" ] || fail "the Flatpak's folder did not get the set"
+    [ ! -e "$native" ] || fail "without OxiGuitar installed otherwise, the usual folder was made"
+    grep -q 'first' "$fp_dir/CREDITS.txt" || fail "no CREDITS.txt in the Flatpak's folder"
+    rm -rf "$fp_dir"
+    mkdir -p "$native"
+    fp --yes --sets first > "$work/log" || { cat "$work/log"; fail "install into both folders failed"; }
+    grep -q "OxiGuitar's Flatpak" "$work/log" || fail "the Flatpak's folder was not named"
+    [ "$(cat "$native/first/First Guitar.sfz")" = "sfz one" ] || fail "the usual folder did not get the set"
+    [ "$(cat "$fp_dir/first/samples/a.flac")" = "sample a" ] || fail "the Flatpak's folder did not get the set too"
+    [ -f "$fp_dir/first/oxiguitar-set.json" ] || fail "the Flatpak's copy has no oxiguitar-set.json"
+    [ "$(cat "$fp_dir/CREDITS.txt")" = "$(cat "$native/CREDITS.txt")" ] || fail "the credits differ"
+    mkdir -p "$fp_dir/mine"; printf 'mine' > "$fp_dir/mine/keep.sfz"
+    fp --yes --uninstall --sets first > "$work/log" || fail "uninstall from both failed"
+    [ ! -e "$native/first" ] || fail "uninstall left the set in the usual folder"
+    [ ! -e "$fp_dir/first" ] || fail "uninstall left the set in the Flatpak's folder"
+    [ "$(cat "$fp_dir/mine/keep.sfz")" = mine ] || fail "a folder of the user's was touched"
+    fp --yes --sets first --dir "$work/elsewhere" > /dev/null || fail "--dir with the Flatpak failed"
+    [ ! -e "$fp_dir/first" ] || fail "--dir also filled the Flatpak's folder"
+fi
+
 # An unknown set is an error.
 if "$root/install.sh" --yes --sets nope --dir "$out" > /dev/null 2>&1; then fail "unknown set accepted"; fi
 echo "install.sh: all checks passed"

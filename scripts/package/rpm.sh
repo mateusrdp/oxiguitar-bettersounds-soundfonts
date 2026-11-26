@@ -4,8 +4,9 @@
 #
 # Builds oxiguitar-bettersounds-soundfonts-VERSION-1.noarch.rpm: the
 # installer, its list of sets and the command oxiguitar-install-sounds. An
-# RPM cannot ask questions, so nothing is downloaded on installation: it
-# says to run the command. Needs rpmbuild.
+# RPM cannot ask questions, so installing it is taken as asking for the sets:
+# %post downloads them for every user, unless OXIGUITAR_SKIP_SOUNDS is set
+# (then it says to run the command). Needs rpmbuild.
 #
 # Usage: scripts/package/rpm.sh VERSION OUT-DIR
 set -euo pipefail
@@ -15,7 +16,7 @@ trap 'echo "::error::rpm.sh line $LINENO: $BASH_COMMAND"' ERR
 
 version="${1:?usage: rpm.sh VERSION OUT-DIR}"
 out_dir="${2:?}"
-rpm_version="${version//-/~}"
+rpm_version="${version//-/\~}"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 top="$work/rpmbuild"

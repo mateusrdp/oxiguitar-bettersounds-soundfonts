@@ -1,19 +1,5 @@
-/target
-**/*.rs.bk
-
-# The private test corpus is never committed.
-*.tar.gz
-
-# Editors and systems
-.idea/
-.vscode/
-*.swp
-.DS_Store
-Thumbs.db
-
-/dist/
-
-# Understand Anything analysis artifacts
-.ua/intermediate/
 .ua/tmp/
-.ua/trash-\*/
+.ua/trash-*/
+
+# The built manual
+/docs/manual/book/

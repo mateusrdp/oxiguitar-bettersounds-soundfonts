@@ -8,6 +8,8 @@ This repository picks one good, free instrument for each job, so you do not
 have to hunt for them. Each set is **one instrument** with no variations to
 choose between: pick the set for a track and it sounds right.
 
+In plain words: a sound set is a library of recordings that turns notes into sound. Every computer has a basic one, with a few short recordings per instrument stretched over every note. These sets are each one instrument recorded in depth, string by string and soft to hard, which is why they sound so much closer to the real thing, and why they are big. The [manual](https://mateusrdp.github.io/oxiguitar-bettersounds-soundfonts/) explains more, and lets you hear the difference.
+
 ## The sets
 
 | Set | Sound | Size | Licence | By |
@@ -26,6 +28,10 @@ Every set is credited, whatever its licence (see [Credits](#credits)). The
 sets come from [FreePats](https://freepats.zenvoid.org/), a project of
 freely licensed sound banks, the bass and the Black and Green Guitars from Karoryfer Samples, and the drum kit from DrumGizmo; their files
 are fetched from the places listed in `sets.txt`.
+
+## Manual
+
+The manual is at <https://mateusrdp.github.io/oxiguitar-bettersounds-soundfonts/>. Its source is in [docs/manual](docs/manual). It covers what the plugin is for, how it works, what it needs and how to install it.
 
 ## Install
 
@@ -91,9 +97,20 @@ mind.
 | macOS | `~/Library/Application Support/OxiGuitar/soundfonts/` |
 | Windows | `%APPDATA%\OxiGuitar\soundfonts\` |
 | For every user (Linux) | `./install.sh --system`, into `/usr/share/oxiguitar/soundfonts/` (run as root) |
+| OxiGuitar's Flatpak (Linux) | `~/.var/app/io.github.mateusrdp.OxiGuitar/data/oxiguitar/soundfonts/`, filled by `install.sh` by itself (below) |
 
 `OXIGUITAR_HOME` moves OxiGuitar's whole data folder; the installer follows
 it. `--dir DIR` (`-Dir DIR`) picks any other folder.
+
+OxiGuitar's Flatpak sees only its own folders, not the ones above, so when
+it is installed (`flatpak info io.github.mateusrdp.OxiGuitar` finds it, or
+its folder under `~/.var/app` exists) `install.sh` installs into the
+Flatpak's `soundfonts` folder as well, and says so: the files there are hard
+links to the first copy where both folders are on one disk, so they take no
+more room. With no other OxiGuitar installed (no `oxiguitar` program and no
+folder of its own yet), the Flatpak's folder is the only one. `--uninstall`
+removes the sets from both. `--dir`, `--system` and `OXIGUITAR_HOME` leave the
+Flatpak's folder out.
 
 Each set gets its own folder holding the instrument, its samples, its
 licence and an `oxiguitar-set.json` that tells OxiGuitar what it is (its
@@ -130,6 +147,8 @@ installer writes next to the sets, and in the licence file kept with it.
 The drum kit's licence (CC BY 4.0) asks for this credit wherever the sounds
 are used in a published recording: **Drum samples provided by DrumGizmo.org**.
 
+The manual's [Credits](https://mateusrdp.github.io/oxiguitar-bettersounds-soundfonts/credits.html) page lists every set's authors and licence, and the tools the installer uses. Thank you to Karoryfer Samples, the FreePats contributors and the DrumGizmo team for recording these instruments and giving them away.
+
 ## For maintainers
 
 `sets.in` says which instrument is in each set. `scripts/pin.sh` reads it,
@@ -137,6 +156,14 @@ finds the files each instrument plays in the source repository, downloads
 them once to compute their checksums and writes `sets.txt`; commit both.
 `scripts/check-sets.sh` checks they agree, and `tests/` runs both
 installers against made-up sets without the network.
+
+## Testing
+
+Every test, with one command (the manual's Testing page says more, and how to report a failure):
+
+```sh
+python3 scripts/test-all.py
+```
 
 ## Licence
 

@@ -1,0 +1,105 @@
+{
+  "repository": "mateusrdp/oxiguitar-bettersounds-soundfonts",
+  "stages": [
+    {
+      "name": "sets list",
+      "run": [
+        "bash",
+        "scripts/check-sets.sh"
+      ],
+      "needs": [
+        "bash"
+      ],
+      "doc": "`sets.txt` checked against `sets.in` (`scripts/check-sets.sh`)"
+    },
+    {
+      "name": "shell lint",
+      "run": [
+        "bash",
+        "-c",
+        "shellcheck -x install.sh scripts/*.sh scripts/*/*.sh tests/*.sh"
+      ],
+      "needs": [
+        "bash",
+        "shellcheck"
+      ],
+      "doc": "shellcheck on every shell script"
+    },
+    {
+      "name": "install.sh",
+      "run": [
+        "bash",
+        "tests/test-install.sh"
+      ],
+      "needs": [
+        "bash",
+        "curl"
+      ],
+      "doc": "`install.sh` against two made-up sets served from local files, with no network (`tests/test-install.sh`)"
+    },
+    {
+      "name": "install.ps1",
+      "run": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tests/test-install.ps1"
+      ],
+      "needs": [
+        "pwsh"
+      ],
+      "doc": "`install.ps1` the same way, in PowerShell 7 (`tests/test-install.ps1`; needs `pwsh`)"
+    },
+    {
+      "name": "install.ps1 (Windows PowerShell 5.1)",
+      "run": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tests/test-install.ps1"
+      ],
+      "os": [
+        "windows"
+      ],
+      "needs": [
+        "powershell"
+      ],
+      "doc": "on Windows, `install.ps1` in Windows PowerShell 5.1 too"
+    },
+    {
+      "name": ".deb",
+      "run": [
+        "bash",
+        "tests/test-packages.sh",
+        "deb"
+      ],
+      "os": [
+        "linux"
+      ],
+      "needs": [
+        "bash",
+        "dpkg-deb"
+      ],
+      "doc": "on Linux, the `.deb` built and checked without installing it (`tests/test-packages.sh deb`; lintian too where it is installed)"
+    },
+    {
+      "name": ".rpm",
+      "run": [
+        "bash",
+        "tests/test-packages.sh",
+        "rpm"
+      ],
+      "os": [
+        "linux"
+      ],
+      "needs": [
+        "bash",
+        "rpmbuild",
+        "rpm"
+      ],
+      "doc": "on Linux, the `.rpm` built and checked without installing it (`tests/test-packages.sh rpm`; needs rpmbuild)"
+    }
+  ]
+}
